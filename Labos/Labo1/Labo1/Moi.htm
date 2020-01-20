@@ -1,53 +1,85 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Moi par VotreNom</title>
-   <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />   
- 
- 
-  <!-- Code JavaScript local -->
-  <script type="text/javascript">
-      const dessiner = ()=> {
-		const objCanvas = document.getElementById('monCanvas');
-        const objC2D = objCanvas.getContext('2d');
-		
-		// Dessiner votre prénom ici
-      }
-   </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Moi par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />
+
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        const dessiner = () => {
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+
+            var objImage = new Image();
+            objImage.src = 'motif.png';
+            objImage.onload = function () {
+
+                         
+
+                objMotif = objC2D.createPattern(objImage, 'repeat');
+                objC2D.fillStyle = objMotif; // Appliquer le motif au remplissage
+                var strTexte = 'Gabriel Marrero';
+                objC2D.font = '50px Arial';
+                objC2D.textAlign = "center";
+
+
+               
+                objC2D.lineWidth = 2;
+
+                objC2D.strokeText(strTexte, objCanvas.width / 2, objCanvas.height / 2)
+                objC2D.fillText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
+                objC2D.measureText();
+                objC2D.strokeStyle = 'black';
+               
+                //pouir la bordure en pointier
+        
+                objC2D.setLineDash([3,1,1,1]); // Style de segment  
+                objC2D.strokeText(strTexte,objCanvas.width / 2, objCanvas.height / 2)
+            }
+             //objC2D.beginPath();
+          
+                          
+
+
+        }
+    </script>
 </head>
 
 <body onload="dessiner()">
 
     <header class="sTexteCentre sLargeurDiv sEntete">
-        <p> 
+        <p>
             <span class="sTitreApp">
                 Moi<br />
-            </span> par 
+            </span> par
             <span class="sAuteurApp">
-                VotreNom
-            </span> 
-       </p>
+                Gabriel Marrero
+            </span>
+        </p>
     </header>
 
-    <main class="sLargeurDiv sCorps">	
-	   <canvas id="monCanvas" width="640" height="320">
-		    Votre navigateur ne supporte pas la balise canvas
-	    </canvas>
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="320">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
     </main>
 
     <footer class="sLargeurDiv sPiedDePage">
         <p>
             <a href="http://www.cgodin.qc.ca">
                 <img src="logoCGG.jpg" alt="logoCGG" />
-            </a> 
-			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
-	           Département d'informatique du Cégep Gérald-Godin
-	        </a> 
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
             <br />
             &copy; 2020
         </p>
     </footer>
 </body>
+
 </html>
