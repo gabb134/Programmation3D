@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Dégradé linéaire Ciel Terre Arbre et Sprite</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+          const objCanvas = document.getElementById('monCanvas');
+          const objC2D = objCanvas.getContext('2d');
+          //Creation of a sky gradient (from a dark blue to a lighter blue)
+          const objDegradeCiel=objC2D.createLinearGradient(0,0, 0,objCanvas.height*0.7);
+          objDegradeCiel.addColorStop(0, 'rgb(55,121,179)');
+          objDegradeCiel.addColorStop(0.7, 'rgb(121,194,245)');
+          objDegradeCiel.addColorStop(1, 'rgb(164,200,214)');
+          objC2D.fillStyle=objDegradeCiel;
+          objC2D.fillRect(0,0,objCanvas.width,objCanvas.height*0.7);
+          //Creation of a grass gradient (from a dark green to a lighter green)
+          const objDegradeTerre = objC2D.createLinearGradient(0,0,objCanvas.height*0.7,objCanvas.height)
+          objDegradeTerre.addColorStop(0.0, 'rgb(81,140,20)');
+          objDegradeTerre.addColorStop(1.0, 'rgb(123,177,57)');
+          objC2D.fillStyle=objDegradeTerre
+          objC2D.fillRect(0, objCanvas.height*0.7,objCanvas.width, objCanvas.height*0.3)
+          paintTree()
+          paintRobot()
+        }   
+        
+        const paintTree = ()=>{
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+            // then, draw the background tree
+            objC2D.beginPath();
+            objC2D.fillStyle = 'rgb(143,89,2)';
+            objC2D.lineStyle = 'rgb(10,10,10)';
+            objC2D.lineWidth = 2;
+            objC2D.rect(objCanvas.width/2, objCanvas.height*0.7+5, 10, -50); // tronc de l'arbre
+            objC2D.fill();
+            objC2D.stroke();
+            
+            objC2D.beginPath();
+            objC2D.fillStyle = 'rgb(78,154,6)';
+            objC2D.arc(objCanvas.width/2 + 5, objCanvas.height*0.7-60, 30, 0, Math.PI*2); // Les feuilles
+            objC2D.fill();
+            objC2D.stroke();
+        }
+
+        const paintRobot = ()=>{
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+            
+            sprite = new Image()
+            sprite.onload = ()=>{
+                objC2D.drawImage(sprite, 2*sprite.width/8, 0, sprite.width/8, sprite.height, 3*sprite.width/8, objCanvas.height*0.65, sprite.width/8, sprite.height)
+            }
+            sprite.src = 'blue-robot.png'
+        }
+
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

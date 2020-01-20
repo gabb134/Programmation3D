@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Rectangle 2</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+          
+        objC2D.beginPath();
+        objC2D.arc(75, 75, 50, 0, Math.PI * 2, true);  // Cercle extérieur
+        objC2D.moveTo(110,75);
+        objC2D.arc(75, 75, 35, 0, Math.PI, false);  // Bouche (sens horaire)
+        objC2D.moveTo(65, 65);
+        objC2D.arc(60, 65, 5, 0, Math.PI * 2, true);  // Oeil gauche
+        objC2D.moveTo(95, 65);
+        objC2D.arc(90, 65, 5, 0, Math.PI * 2, true);  // Oeil droite
+        objC2D.stroke();
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

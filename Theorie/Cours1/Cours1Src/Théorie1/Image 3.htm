@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Image 3</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+		const objImage = new Image();   
+		objImage.onload = ()=>
+		{
+			//Ici on garde la proportion
+			//Voir exemple Image 2.htm où on ne garde pas la proportion
+			objC2D.drawImage(objImage, 0, 0, objImage.width * 0.50, objImage.height * 0.50);
+		}
+		objImage.src = 'prof.jpg'; 
+	}
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

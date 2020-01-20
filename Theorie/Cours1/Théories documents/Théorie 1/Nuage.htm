@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Nuage</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+		console.log(objC2D.canvas)
+		objC2D.beginPath();
+		objC2D.moveTo(70, 80);
+		objC2D.bezierCurveTo(30, 100, 30, 150, 130, 150);
+		objC2D.bezierCurveTo(150, 180, 220, 180, 240, 150);
+		objC2D.bezierCurveTo(320, 150, 320, 120, 290, 100);
+		objC2D.bezierCurveTo(330, 40, 270, 30, 240, 50);
+		objC2D.bezierCurveTo(220, 5, 150, 20, 150, 50);
+		objC2D.bezierCurveTo(100, 5, 50, 20, 70, 80);
+		objC2D.closePath();
+		objC2D.lineWidth = 5;
+		objC2D.fillStyle = '#8ED6FF';
+		objC2D.fill();
+		objC2D.strokeStyle = 'blue';
+		objC2D.stroke();
+    }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

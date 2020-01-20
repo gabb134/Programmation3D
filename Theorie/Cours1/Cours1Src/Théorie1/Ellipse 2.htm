@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Ellipse 2</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+		objC2D.strokeStyle = 'coral'; 
+		objC2D.fillStyle = 'yellow'; 
+		objC2D.lineWidth = 5;
+		objC2D.beginPath();
+		objC2D.ellipse(150,150, 100,50, Math.PI/4, 0,2 * Math.PI,true);
+		objC2D.fill();
+		objC2D.stroke();
+		
+      }     
+
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

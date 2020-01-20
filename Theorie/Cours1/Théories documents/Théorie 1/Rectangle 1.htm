@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Rectangle 1</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+          const objCanvas = document.getElementById('monCanvas');
+          const objC2D = objCanvas.getContext('2d');
+          objC2D.beginPath();   	  // Définir un tracé
+          objC2D.rect(50, 50, 200, 100);   // Le tracé rectangulaire
+		  objC2D.fillStyle = 'purple';     // Couleur de remplissage
+          objC2D.fill();              	  // Remplissage du tracé
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>
