@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Nuage</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+		const strTexte = 'Allo';
+		objC2D.fillStyle = 'yellow';
+		objC2D.strokeStyle = 'black';
+		objC2D.font = '30pt Verdana';
+
+		// Dessiner de la gauche vers la droite (par défaut)
+		objC2D.textAlign = 'left';
+		objC2D.fillText(strTexte,objCanvas.width/2,40); 
+		objC2D.strokeText(strTexte,objCanvas.width/2,40);
+
+		// Dessiner à partir du milieu
+		objC2D.textAlign = 'center';
+		objC2D.fillText(strTexte,objCanvas.width/2, 80);
+		objC2D.strokeText(strTexte,objCanvas.width/2,80);
+
+		// Dessiner de la droite vers la gauche
+		objC2D.textAlign = 'right';
+		objC2D.fillText(strTexte,objCanvas.width/2, 120);
+		objC2D.strokeText(strTexte,objCanvas.width/2,120);
+    }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

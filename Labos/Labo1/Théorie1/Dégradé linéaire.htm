@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Dégradé linéaire</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+          const objCanvas = document.getElementById('monCanvas');
+          const objC2D = objCanvas.getContext('2d');
+          const objDegrade=objC2D.createLinearGradient(0,0, 170,170);
+          objDegrade.addColorStop(0, 'blue');
+          objDegrade.addColorStop(0.5, 'yellow');
+          objDegrade.addColorStop(1, 'red');
+          objC2D.fillStyle=objDegrade;
+          objC2D.fillRect(0,0,170,170);
+      }     
+
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

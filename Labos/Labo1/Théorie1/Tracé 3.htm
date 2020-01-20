@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Tracé 3</title>
+ 
+  <!-- Code JavaScript local -->
+  <script>
+      const dessiner = ()=> {
+          const objCanvas = document.getElementById('monCanvas');
+          const objC2D = objCanvas.getContext('2d');
+		  
+		  // Pointillés: 5 pleins, 5 vides, 5 pleins, 5 vides, ...
+          objC2D.beginPath();   //  Définir un nouveau tracé	    
+		  objC2D.moveTo(50, 50); objC2D.lineTo(250, 50);
+		  objC2D.setLineDash([5]); // Style de segment
+          objC2D.stroke();       // Dessiner le segment
+		  
+		  // Pointillés: 10 pleins, 5 vides, 10 pleins, 5 vides, ...
+          objC2D.beginPath();   //  Définir un nouveau tracé	    
+		  objC2D.moveTo(50, 100); objC2D.lineTo(250, 100);
+		  objC2D.setLineDash([10,5]); // Style de segment
+           objC2D.stroke();       // Dessiner le segment
+
+		  // Pointillés: 10 pleins, 5 vides, 5 pleins, 10 vides, ...
+          objC2D.beginPath();   //  Définir un nouveau tracé	    
+		  objC2D.moveTo(50, 150); objC2D.lineTo(250, 150);
+		  objC2D.setLineDash([10,5,5,10]); // Style de segment
+          objC2D.stroke();       // Dessiner le segment
+
+		  // Segment plein
+          objC2D.beginPath();   //  Définir un nouveau tracé	    
+		  objC2D.moveTo(50, 200); objC2D.lineTo(250, 200);
+		  objC2D.setLineDash([]); // Style de segment
+          objC2D.stroke();       // Dessiner le segment
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Image 2</title>
+ 
+  <!-- Code JavaScript local -->
+  <script >
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+        const objC2D = objCanvas.getContext('2d');
+        const objImage = new Image();   // Créer l’image
+        objImage.onload = ()=>{   
+            // L’image est dessinée lorsque le chargement est terminé 
+            // Les proportions ne sont pas sauvegardées, vous verrez une déformation de l'image
+            // Vérifiez la taille de l'image originale qui est de 800 X 533
+            // Voir exemple Image 3.htm où on garde la proportion
+            objC2D.drawImage(objImage, 0, 0, 300, 300);
+        }
+        objImage.src = 'prof.jpg';   // Le fichier qui contient l’image
+    }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>
