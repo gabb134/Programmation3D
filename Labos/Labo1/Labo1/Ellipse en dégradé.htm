@@ -1,53 +1,77 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Ellipse en dégradé par VotreNom</title>
-  <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />   
- 
- 
-  <!-- Code JavaScript local -->
-  <script type="text/javascript">
-      const dessiner = ()=> {
-		const objCanvas = document.getElementById('monCanvas');
-        const objC2D = objCanvas.getContext('2d');
-		
-		// Dessiner votre ellipse ici
-      }
-   </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Ellipse en dégradé par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />
+
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        const dessiner = () => {
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+
+            // Dessiner votre ellipse ici
+            objC2D.strokeStyle = 'coral';
+            objC2D.lineWidth = 2;
+            objC2D.beginPath();
+            objC2D.ellipse(objCanvas.width / 2, objCanvas.height / 2,objCanvas.width / 2, objCanvas.height / 2, 0, 0, Math.PI *2, true);
+           // objC2D.ellipse(objCanvas.width / 2, objCanvas.height / 2,objCanvas.width / 2, objCanvas.height / 2, 0, 0, Math.PI, false);
+            objC2D.stroke();
+
+          var objDegrade = objC2D.createRadialGradient(objCanvas.width / 2,objCanvas.height / 2,objCanvas.width / 2,objCanvas.width / 2,objCanvas.height / 2,objCanvas.height / 2);
+          objDegrade.addColorStop(0,'red'); 
+         // objDegrade.addColorStop(0.5,'orange');
+          objDegrade.addColorStop(1,'yellow');
+            
+           
+           
+            objC2D.fillStyle = objDegrade;
+           // objC2D.arc(0,0,objCanvas.width / 2,0,0,objCanvas.height / 2);
+            objC2D.fill();
+
+
+
+
+
+        }
+    </script>
 </head>
 
 <body onload="dessiner()">
 
     <header class="sTexteCentre sLargeurDiv sEntete">
-        <p> 
+        <p>
             <span class="sTitreApp">
                 Ellipse en dégradé<br />
-            </span> par 
+            </span> par
             <span class="sAuteurApp">
-                VotreNom
-            </span> 
-       </p>
+                Gabriel Marrero
+            </span>
+        </p>
     </header>
 
-    <main class="sLargeurDiv sCorps">	
-	   <canvas id="monCanvas" width="640" height="320">
-		    Votre navigateur ne supporte pas la balise canvas
-	    </canvas>
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="320">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
     </main>
 
     <footer class="sLargeurDiv sPiedDePage">
         <p>
             <a href="http://www.cgodin.qc.ca">
                 <img src="logoCGG.jpg" alt="logoCGG" />
-            </a> 
-			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
-	           Département d'informatique du Cégep Gérald-Godin
-	        </a> 
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
             <br />
             &copy; 2020
         </p>
     </footer>
 </body>
+
 </html>

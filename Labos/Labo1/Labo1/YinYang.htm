@@ -1,52 +1,100 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Yin Yang par VotreNom</title>
-  <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />   
- 
-  <!-- Code JavaScript local -->
-  <script type="text/javascript">
-      const dessiner = ()=> {
-        const objCanvas = document.getElementById('monCanvas');
-        const objC2D = objCanvas.getContext('2d');
-		
-		// Dessiner le symbole du Yin Yang ici
 
-      }
-   </script>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Yin Yang par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        const dessiner = () => {
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+
+            // Dessiner le symbole du Yin Yang ici
+
+            //demi cercle droit en noir
+            //objC2D.strokeStyle = 'coral';
+            objC2D.lineWidth = 2;
+            objC2D.beginPath();
+            objC2D.arc(objCanvas.width / 2, objCanvas.height / 2, objCanvas.width / 2,Math.PI/2,3*Math.PI/2,true);
+            objC2D.fillStyle = 'black'; 
+            objC2D.stroke();
+            objC2D.fill();
+
+            //demi cercle gauche en jaune
+            objC2D.beginPath();
+            objC2D.arc(objCanvas.width / 2, objCanvas.height / 2, objCanvas.width / 2,3*Math.PI/2,Math.PI/2,true);
+            objC2D.fillStyle = 'yellow'; 
+            objC2D.stroke();
+            objC2D.fill();
+
+
+            //les cercles au complets pleins (jaune en haut)
+            objC2D.beginPath();
+            objC2D.arc(objCanvas.width / 2, objCanvas.height / 4, objCanvas.width / 4,0,2*Math.PI,false);
+            objC2D.fillStyle = 'yellow'; 
+            //objC2D.stroke();
+            objC2D.fill();
+
+             //les cercles au complets pleins (noir en bas)
+             objC2D.beginPath();
+            objC2D.arc(objCanvas.width/2 , objCanvas.height*3/4 , objCanvas.width/4,0,2*Math.PI,false);
+            objC2D.fillStyle = 'black'; 
+            //objC2D.stroke();
+            objC2D.fill();
+
+             //les petits cercles au complets pleins (noir en haut)
+             objC2D.beginPath();
+            objC2D.arc(objCanvas.width / 2, objCanvas.height / 4, objCanvas.height/ 20,0,2*Math.PI,false);
+            objC2D.fillStyle = 'black'; 
+            //objC2D.stroke();
+            objC2D.fill();
+
+             //les petis cercles au complets pleins (jaune en bas)
+             objC2D.beginPath();
+            objC2D.arc(objCanvas.width/2 , objCanvas.height*3/4 , objCanvas.height/ 20,0,2*Math.PI,false);
+            objC2D.fillStyle = 'yellow'; 
+            //objC2D.stroke();
+            objC2D.fill();
+
+
+        }
+    </script>
 </head>
 
 <body onload="dessiner()">
     <header class="sTexteCentre sLargeurDiv sEntete">
-        <p> 
+        <p>
             <span class="sTitreApp">
                 Yin Yang<br />
-            </span> par 
+            </span> par
             <span class="sAuteurApp">
-                VotreNom
-            </span> 
-       </p>
+                Gabriel Marrero
+            </span>
+        </p>
     </header>
 
-    <main class="sLargeurDiv sCorps">	
-	   <canvas id="monCanvas" width="640" height="640">
-		    Votre navigateur ne supporte pas la balise canvas
-	    </canvas>
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
     </main>
 
     <footer class="sLargeurDiv sPiedDePage">
         <p>
             <a href="http://www.cgodin.qc.ca">
                 <img src="logoCGG.jpg" alt="logoCGG" />
-            </a> 
- 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
-	           Département d'informatique du Cégep Gérald-Godin
-	        </a> 
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
             <br />
             &copy; 2020
         </p>
     </footer>
 </body>
+
 </html>
