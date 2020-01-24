@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Translation</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+		// Cercle plein rouge
+		objC2D.fillStyle = 'red';
+		objC2D.beginPath(); objC2D.arc(50,50,50,0,2*Math.PI); // Cercle rouge dessiné à la position (50,50)
+		objC2D.fill();
+
+		objC2D.translate(100,50); // Déplacer le contexte de (100,50)
+		// Cercle plein vert
+		objC2D.fillStyle = 'green';
+		objC2D.beginPath(); objC2D.arc(50,50,50,0,2*Math.PI); // Cercle vert dessiné à la position (50,50)
+		objC2D.fill();
+
+		objC2D.translate(-50,100); // Déplacer le contexte de (-50,100)
+		// Cercle plein bleu
+		objC2D.fillStyle = 'blue'; 
+		objC2D.beginPath(); objC2D.arc(50,50,50,0,2*Math.PI); // Cercle bleu dessiné à la position (50,50)
+		objC2D.fill();
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Ombrage</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+
+		// Les paramètres de l'ombrage
+		objC2D.shadowColor = 'black';
+		objC2D.shadowBlur = 10;
+		objC2D.shadowOffsetX = 15;
+		objC2D.shadowOffsetY = 10;
+
+		// Largeur de la ligne et couleurs
+		objC2D.lineWidth = 2;	
+		objC2D.fillStyle = 'yellow';
+		objC2D.strokeStyle = 'black';  
+
+		// Le dessin du texte
+		const texte = 'Ombrage';
+		objC2D.font = '50px Arial';
+		objC2D.textAlign = 'left';
+		objC2D.fillText(texte,0,50); 
+		objC2D.strokeText(texte,0,50);
+
+		// Le dessin du cercle
+		objC2D.beginPath();
+		objC2D.arc(90,120,50,0,2*Math.PI,false);
+		objC2D.stroke();
+		objC2D.fill();
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

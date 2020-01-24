@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Rotation du texte</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+			
+		// Tourner le contexte de 90 degrés
+		objC2D.rotate(Math.PI/2);
+
+		// Écrire le texte
+		const strTexte = 'Écrit à 90 degrés';
+		objC2D.fillStyle = 'magenta';
+		objC2D.font = '30pt Verdana';
+		objC2D.textBaseLine = 'top';
+		objC2D.fillText(strTexte,0,0);
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

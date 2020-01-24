@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Rotation</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+		objC2D.fillStyle = 'purple';
+		// Rotation du carré 
+		for (let i = 0; i < 18; i++) {	
+			objC2D.rotate(Math.PI/9); // Rotation du contexte de 20 degrés (Math.PI radians = 180 degrés)
+			objC2D.fillRect(50,0, 10,10); // Le carré se dessine à la position (50,0)
+		}
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

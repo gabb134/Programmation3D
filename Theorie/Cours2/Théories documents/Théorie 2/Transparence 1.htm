@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Transparence 1</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+		 // Cercles à moitié transparent
+		objC2D.globalAlpha = 0.5;
+
+		// Cercle plein rouge
+		objC2D.fillStyle = 'red';
+		objC2D.beginPath();
+		objC2D.arc(100,100,100,0,2*Math.PI,true);
+		objC2D.fill();
+
+		// Cercle plein vert
+		objC2D.fillStyle = 'green';
+		objC2D.beginPath();
+		objC2D.arc(200,100,100,0,2*Math.PI);
+		objC2D.fill();
+
+		// Cercle plein bleu
+		objC2D.fillStyle = 'blue';
+		objC2D.beginPath();
+		objC2D.arc(150,200,100,0,2*Math.PI);
+		objC2D.fill();
+      }
+
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

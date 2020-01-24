@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Superman au négatif par VotreNom</title>
+   <link rel="stylesheet" href="StyleLabo5.css" />   
+ 
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+          const objCanvas = document.getElementById('monCanvas');
+          const objC2D = objCanvas.getContext('2d');
+          const objImage = new Image();   // Créer l’image
+          objImage.src = 'Superman.jpg';  // Le fichier
+          objImage.onload = function () {
+              // Dessiner l'image originale
+              objC2D.drawImage(objImage, 10, 10);
+
+              // Aller chercher l’image dessinée
+              const objPixels = objC2D.getImageData(10, 10, objImage.width, objImage.height);
+
+              // Parcourir le tableau d’octets
+              for (let i = 0; i < objPixels.data.length; i += 4) {
+                  const enGris = Math.floor((objPixels.data[i] +
+					  objPixels.data[i + 1] + objPixels.data[i + 2]) / 3);
+                  // Changer la couleur des pixels
+                  for (let j = 0; j < 3; j++) objPixels.data[i + j] = enGris;
+              }
+
+              // Redessiner l'image transformée
+              objC2D.putImageData(objPixels, 10, 20 + objImage.height);
+          }  
+      }         
+   </script>
+</head>
+
+<body onload="dessiner()">
+
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Superman au négatif<br />
+            </span> par 
+            <span class="sAuteurApp">
+                VotreNom
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="390">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Couleurs hasard </title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+
+		// Créer un conteneur de pixels de taille 200 X 100
+		// Ce conteneur contient 20000 pixels (200*100)
+		// Le tableau contient 80000 octets (20000*4)
+		const objPixels = objC2D.createImageData(200,100); 
+
+		for (let i=0; i < objPixels.data.length; i +=4)
+		{ // Parcourir le tableau d’octets
+		  // Composante rouge au hasard entre 0 et 255
+		  objPixels.data[i] = Math.floor(Math.random() * 256);
+		  // Composante verte au hasard entre 0 et 255
+		  objPixels.data[i+1] = Math.floor(Math.random() * 256);
+		  // Composante bleue au hasard entre 0 et 255
+		  objPixels.data[i+2] = Math.floor(Math.random() * 256);
+		 // Composante alpha est égale à 255 (opaque)
+		  objPixels.data[i+3] = 255;
+		}
+
+		// Affecte ces pixels au canevas à la position (10, 10)
+		objC2D.putImageData(objPixels, 10,10);
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

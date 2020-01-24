@@ -1,0 +1,12 @@
+Pour node js 
+
+
+1. ouvrir le terminal sur vs code
+2. npm init package.json
+3. npm init -y
+4.npm i --save nodemon
+5.npm i --save expres
+6. creer le fichier server.js et prendre les informatrion du labo 2 
+7. ajouter le "/" dans app.use(express.static(path.join(__dirname, '/')))
+8. npm start
+9. creer un fichier index.html pour visualiser les labos, prendre l'Exemple du labo 2

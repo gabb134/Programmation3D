@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Miroir vertical</title>
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      const dessiner = ()=> {
+        const objCanvas = document.getElementById('monCanvas');
+		const objC2D = objCanvas.getContext('2d');
+		// Effet miroir horizontal
+		objC2D.translate(0,30);
+		objC2D.scale(1,-1);
+
+		// Écrire le texte
+		const strTexte = 'Effet miroir vertical';
+		objC2D.fillStyle = 'Maroon';
+		objC2D.font = '30px Verdana';
+		objC2D.textBaseline='top';
+		objC2D.textAlign='left';
+		objC2D.fillText(strTexte,0,0);
+      }     
+   </script>
+</head>
+
+<body onload="dessiner()"> 
+	<canvas id="monCanvas" width="350" height="350">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>
