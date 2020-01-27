@@ -16,11 +16,6 @@
 
 
 
-            //creer zone de decoupage
-
-            objC2D.beginPath();
-            objC2D.ellipse(objCanvas.width / 2, objCanvas.height / 2,objCanvas.width / 2, objCanvas.height / 2, 0, 0, Math.PI *2, true);
-            objC2D.clip();
 
 
             // Dessiner votre drapeau de l'Angleterre ici
@@ -116,6 +111,12 @@
             objC2D.stroke();
 
 
+            //creer zone de composition
+
+            objC2D.beginPath();
+            objC2D.globalCompositeOperation = 'destination-atop';
+            objC2D.ellipse(objCanvas.width / 2, objCanvas.height / 2, objCanvas.width / 2, objCanvas.height / 2, 0, 0, Math.PI * 2, true);
+            objC2D.fill();
 
 
 

@@ -14,37 +14,71 @@
             const objCanvas = document.getElementById('monCanvas');
             const objC2D = objCanvas.getContext('2d');
 
-            var objImage = new Image();
-            objImage.src = 'motif.png';
-            objImage.onload = function () {
+            var objImage1 = new Image();
+            objImage1.src = 'beStill.jpg';
+            objImage1.onload = function () {
 
 
-                //texte
-                objMotif = objC2D.createPattern(objImage, 'repeat');
-                objC2D.fillStyle = objMotif; // Appliquer le motif au remplissage
-                var strTexte = 'Gabriel ';
-                objC2D.font = '50px Arial';
-                objC2D.textAlign = "center";
+                //transparence de l'image
+                objC2D.globalAlpha = 0.5;
+                //image de fond
+                objC2D.drawImage(objImage1, 0, 0, objCanvas.width, objCanvas.height);
 
 
 
-                objC2D.lineWidth = 2;
 
-                objC2D.strokeText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
-                objC2D.fillText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
 
-                objC2D.strokeStyle = 'black';
 
-                //pouir la bordure en pointier
-          
-                //contour
-                objC2D.setLineDash([3, 1, 1, 1]); // Style de segment  
-                // objC2D.rect(strTexte.length, 250,objC2D.measureText(strTexte).width, 40);
-                objC2D.strokeRect(objCanvas.width / 2-(objC2D.measureText(strTexte).width/2), objCanvas.height/2-(50), objC2D.measureText(strTexte).width, 70);
-                //objC2D.strokeRect(10,10,10, 4);
-               // console.log(objC2D.measureText(strTexte).width);
-                // objC2D.stroke();
+                var objImage = new Image();
+                objImage.src = 'motif.png';
+                objImage.onload = function () {
+
+                    //effet d'ombrage sur le contour
+                    // Les paramètres de l'ombrage
+                    objC2D.shadowColor = 'black';
+                    objC2D.shadowBlur = 5;
+                    objC2D.shadowOffsetX = 5; // Vers la droite
+                    objC2D.shadowOffsetY = 0; // Vers le bas
+
+                    //texte
+                    objMotif = objC2D.createPattern(objImage, 'repeat');
+                    objC2D.fillStyle = objMotif; // Appliquer le motif au remplissage
+                    var strTexte = 'GABRIEL ';
+                    objC2D.font = '50px Arial';
+                    objC2D.textAlign = "center";
+
+
+
+                    objC2D.lineWidth = 2;
+
+                    objC2D.strokeText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
+                    objC2D.fillText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
+
+                    objC2D.strokeStyle = 'black';
+
+                    //effet d'ombrage sur le contour
+                    // Les paramètres de l'ombrage
+                    objC2D.shadowColor = 'black';
+                    objC2D.shadowBlur = 5;
+                    objC2D.shadowOffsetX = 10; // Vers la droite
+                    objC2D.shadowOffsetY = 5; // Vers le bas
+
+
+                    //pouir la bordure en pointier
+
+                    //contour
+                    objC2D.setLineDash([3, 1, 1, 1]); // Style de segment  
+                    //objC2D.strokeStyle = 'black';    
+                    // objC2D.rect(strTexte.length, 250,objC2D.measureText(strTexte).width, 40);
+                    objC2D.strokeRect(objCanvas.width / 2 - (objC2D.measureText(strTexte).width / 2), objCanvas.height / 2 - (50), objC2D.measureText(strTexte).width, 70);
+                    //objC2D.strokeRect(10,10,10, 4);
+                    // console.log(objC2D.measureText(strTexte).width);
+                    // objC2D.stroke();
+                }
             }
+
+
+
             //objC2D.beginPath();
 
 
