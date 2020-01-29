@@ -14,10 +14,11 @@
             const objCanvas = document.getElementById('monCanvas');
             const objC2D = objCanvas.getContext('2d');
 
+            objC2D.save()
             // Dessiner le drapeau de la Malaisie \
             objC2D.beginPath();
-            //objC2D.fillStyle = 'purple';           
-            objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
+            objC2D.fillStyle = 'purple';           
+             objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
 
 
 
@@ -28,18 +29,18 @@
                 if (i % 2 == 0) { //paire , lignes rouges
                     objC2D.beginPath();
                     objC2D.fillStyle = 'red';           // Couleur de remplissage
-                    objC2D.fillRect(0, i * 30, objCanvas.width, 30);
+                     objC2D.fillRect(0, i * 30, objCanvas.width, 30);
                 } else {//impaire, lignes blanches
                     objC2D.beginPath();
-                    objC2D.fillStyle = 'white';           // Couleur de remplissage
-                    objC2D.fillRect(0, i * 30, objCanvas.width, 30);
+                    objC2D.fillStyle = 'black';           // Couleur de remplissage
+                       objC2D.fillRect(0, i * 30, objCanvas.width, 30);
                 }
 
 
             }
             //contour noir
             objC2D.strokeStyle = 'black';
-            objC2D.strokeRect(0, 0, objCanvas.width, objCanvas.height)
+              objC2D.strokeRect(0, 0, objCanvas.width, objCanvas.height)
 
             //rectangle bleu en haut a gauche
             objC2D.beginPath();
@@ -50,35 +51,49 @@
             objC2D.beginPath();
             objC2D.fillStyle = 'yellow';
             objC2D.arc(120, 120, 90, 0, 2 * Math.PI, false);
-            objC2D.fill();
+              objC2D.fill();
 
             //cercle bleu
             objC2D.beginPath();
             objC2D.fillStyle = 'blue';
             objC2D.arc(140, 120, 80, 0, 2 * Math.PI, false);
-            objC2D.fill();
+             objC2D.fill();
 
             //les 14 rayons jaunes
             objC2D.translate(200, 120); //pour se positioner au centre du rectangle bleu
             objC2D.beginPath();            //  Définir un nouveau tracé
             objC2D.moveTo(0, 0);       // Le crayon au point 
-            objC2D.lineTo(15, 0);      // Un segment de droite v
-            objC2D.lineTo(5, -60);     // Un segment de droite 
+            objC2D.lineTo(15, 10);      // Un segment de droite v
+            objC2D.lineTo(40, -50);     // Un segment de droite 
             objC2D.closePath();           //  Fermer le tracé
             objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
-            objC2D.fill();             	    // Remplir le tracé
+             objC2D.fill();             	    // Remplir le tracé
 
 
             for (var i = 0; i < 14; i++) {
                 objC2D.rotate(Math.PI / 7);
                 objC2D.beginPath();            //  Définir un nouveau tracé
                 objC2D.moveTo(0, 0);       // Le crayon au point 
-                objC2D.lineTo(15, 0);      // Un segment de droite v
-                objC2D.lineTo(5, -70);     // Un segment de droite 
+                objC2D.lineTo(15, 10);      // Un segment de droite v
+                objC2D.lineTo(40, -50);     // Un segment de droite 
                 objC2D.closePath();           //  Fermer le tracé
                 objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
-                objC2D.fill();
+                 objC2D.fill();
             }
+
+            //pour reprendre la position 0,0 en au a gauche
+            objC2D.restore();
+
+            objC2D.globalCompositeOperation = 'destination-in';
+            //le nom malaisie
+            objC2D.rotate(Math.PI/6);
+
+            objC2D.beginPath();
+            var strTexte = 'MALAISIE';
+            objC2D.font = 'bold 120px Verdana';
+            objC2D.textAlign = "center";
+            objC2D.fillText(strTexte, 400, 40);
+
 
 
 
