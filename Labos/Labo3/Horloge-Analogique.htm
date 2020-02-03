@@ -83,12 +83,12 @@
                 }
                 objC2D.stroke();
 
-              
 
 
+                //*****Les degrees changes lorsquon met le prochain
                 //Aiguille jaune pour les heures
                 objC2D.beginPath();
-                //objC2D.rotate(Math.PI/2);
+                objC2D.rotate(5 * Math.PI / 3); //300 degrees
                 objC2D.moveTo(-10, 30);       // Le crayon au point 
                 objC2D.lineTo(10, 30);      // Un segment de droite v
                 objC2D.lineTo(0, -200);     // Un segment de droite 
@@ -100,7 +100,7 @@
 
                 //Aiguille jaune pour les minutes
                 objC2D.beginPath();
-                //objC2D.rotate(135 * Math.PI / 180);
+                objC2D.rotate(2 * Math.PI / 3); //120 degrees
                 objC2D.moveTo(-10, 30);       // Le crayon au point 
                 objC2D.lineTo(10, 30);      // Un segment de droite v
                 objC2D.lineTo(0, -290);     // Un segment de droite 
@@ -112,7 +112,7 @@
 
                 //Aiguille rouge pour les secondes
                 objC2D.beginPath();
-                //  objC2D.rotate(Math.PI / 2);
+                objC2D.rotate(5 * Math.PI / 3); //300 degrees
                 objC2D.moveTo(-5, 30);       // Le crayon au point 
                 objC2D.lineTo(5, 30);      // Un segment de droite v
                 objC2D.lineTo(0, -230);     // Un segment de droite 
@@ -131,7 +131,7 @@
                 objC2D.closePath();
 
 
-  
+
                 //Rectangle pour la date 
 
                 objC2D.beginPath();
@@ -158,7 +158,7 @@
 
                 //le texte de la date
                 objC2D.beginPath();
-                objC2D.font = '20px Arial';
+                objC2D.font = '20px Arial bold';
                 objC2D.textAlign = "center";
                 objC2D.fillStyle = 'black';
                 objC2D.fillText("02/02/2020", -80, 73);
@@ -166,7 +166,7 @@
 
                 //le texte de l'heure
                 objC2D.beginPath();
-                objC2D.font = '20px Arial';
+                objC2D.font = '20px Arial bold';
                 objC2D.textAlign = "center";
                 objC2D.fillStyle = 'black';
                 objC2D.fillText("10:10:00", 80, 73);

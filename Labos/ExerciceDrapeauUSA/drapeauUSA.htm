@@ -14,9 +14,13 @@
             const objCanvas = document.getElementById('monCanvas');
             const objC2D = objCanvas.getContext('2d');
 
+            const intWidth = objCanvas.width;
+            const intHeight = objCanvas.height;
+
+
             // Dessiner le drapeau de USA 
             objC2D.beginPath();
-            objC2D.fillStyle = 'purple';           
+            objC2D.fillStyle = 'purple';
             objC2D.fillRect(0, 0, objCanvas.width, 350);
 
 
@@ -72,6 +76,52 @@
             objC2D.fillRect(0, 0, 300, 210);
 
             //etoiles
+            for (let lignes = 0; lignes <= 9; lignes++) {
+
+                for (let colonnes = 0; colonnes <= 11; colonnes++) {
+                    if((lignes+colonnes) % 2 == 0){
+                        creerEtoile(0 *colonnes, 0 *lignes, 5,13, 5, "#ffffff", null, 0);
+                    }
+ 
+                }
+
+            }
+            //        creerEtoile(0, 25, 5,13, 5, "#ffffff", null, 0);
+
+
+
+            function creerEtoile(coorCentreX, coorCentreY, rayonCercleInterne, rayonCercleExterne, intnbSommetEterne, strFillColor, strStrokeColor) {
+
+                const fltDegrees = Math.PI / 180;
+                let fltStep = fltDegrees * (360 / intnbSommetEterne) / 2;
+                let fltCurrentStep = 0;
+
+                objC2D.beginPath();
+
+                objC2D.translate(coorCentreX, coorCentreY);
+                for (let i = 0; i < intnbSommetEterne; i++) {
+                    fltCurrentStep += fltStep;
+                    objC2D.lineTo(Math.sin(fltCurrentStep) * rayonCercleExterne, Math.cos(fltCurrentStep) * rayonCercleExterne);
+
+                    fltCurrentStep += fltStep;
+                    objC2D.lineTo(Math.sin(fltCurrentStep) * rayonCercleInterne, Math.cos(fltCurrentStep) * rayonCercleInterne);
+
+                }
+
+                objC2D.closePath();
+
+                if (strFillColor) {
+                    objC2D.fillStyle = strFillColor;
+                    objC2D.fill();
+                }
+
+                if (strStrokeColor) {
+                    objC2D.strokeStyle = strStrokeColor;
+                    objC2D.stroke();
+                }
+
+            }
+
 
 
             /* objC2D.translate(100, 100);

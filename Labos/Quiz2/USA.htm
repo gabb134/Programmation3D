@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Drapeau des États-Unis par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleQuiz1.css" />
+
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        const dessiner = () => {
+            var objCanvas = document.getElementById('monCanvas');
+            var objC2D = objCanvas.getContext('2d');
+
+            // Dessiner votre drapeau des États-Unis ici
+
+            //Utiliser la fonction creerEtoile du quiz 1
+
+            const intWidth = objCanvas.width;
+            const intHeight = objCanvas.height;
+
+
+            // Dessiner le drapeau de USA 
+            objC2D.beginPath();
+            objC2D.fillStyle = 'white';
+            objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
+
+            //lignes blanches
+            for (var i = 0; i < 14; i++) {
+
+                if (i % 2 != 0) { //paire , lignes rouges
+                    objC2D.beginPath();
+                    objC2D.fillStyle = 'white';           // Couleur de remplissage
+                    objC2D.fillRect(0, i * 22, objCanvas.width, 22);
+                }
+
+
+            }        //lignes rouges
+            for (var i = 0; i < 14; i++) {
+
+                if (i % 2 == 0) { //paire , lignes rouges
+                    objC2D.beginPath();
+                    objC2D.fillStyle = '#C10731';           // Couleur de remplissage
+                    objC2D.fillRect(0, i * 22, objCanvas.width, 22);
+                }
+
+
+            }
+
+            //contour noir
+            objC2D.strokeStyle = 'black';
+            objC2D.strokeRect(0, 0, objCanvas.width, 260)
+
+            //rectangle bleu en haut a gauche
+            objC2D.beginPath();
+            objC2D.fillStyle = '#022A67';           // Couleur de remplissage
+            objC2D.fillRect(0, 0, 250, 140);
+
+
+           for (let lignes = 0; lignes <= 5; lignes++) {
+
+             /*   for (let colonnes = 0; colonnes <= 11; colonnes++) {
+                    if ((lignes + colonnes) % 2 == 0) {
+                        creerEtoile(0 * colonnes, 0 * lignes, 5, 13, 5, "#ffffff", null, 0);
+                    }
+
+                }*/
+             //   creerEtoile(lignes, 20, 4, 10, 5, "#ffffff", null, 0);
+            }
+
+            creerEtoile(20, 20, 4, 10, 5, "#ffffff", null, 0);
+            creerEtoile(0, 30, 4, 10, 5, "#ffffff", null, 0);
+
+            function creerEtoile(coorCentreX, coorCentreY, rayonCercleInterne, rayonCercleExterne, intnbSommetEterne, strFillColor, strStrokeColor) {
+
+                const fltDegrees = Math.PI / 180;
+                let fltStep = fltDegrees * (360 / intnbSommetEterne) / 2;
+                let fltCurrentStep = 0;
+
+                objC2D.beginPath();
+
+                objC2D.translate(coorCentreX, coorCentreY);
+                for (let i = 0; i < intnbSommetEterne; i++) {
+                    fltCurrentStep += fltStep;
+                    objC2D.lineTo(Math.sin(fltCurrentStep) * rayonCercleExterne, Math.cos(fltCurrentStep) * rayonCercleExterne);
+
+                    fltCurrentStep += fltStep;
+                    objC2D.lineTo(Math.sin(fltCurrentStep) * rayonCercleInterne, Math.cos(fltCurrentStep) * rayonCercleInterne);
+
+                }
+
+                objC2D.closePath();
+
+                if (strFillColor) {
+                    objC2D.fillStyle = strFillColor;
+                    objC2D.fill();
+                }
+
+                if (strStrokeColor) {
+                    objC2D.strokeStyle = strStrokeColor;
+                    objC2D.stroke();
+                }
+
+            }
+
+
+
+        }
+
+
+    </script>
+</head>
+
+<body onload="dessiner()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Drapeau des États-Unis<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="570" height="300">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+
+</html>
