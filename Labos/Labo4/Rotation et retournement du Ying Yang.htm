@@ -5,7 +5,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="description" content="Yin Yang 2020">
-	<title>Rotation du Yin Yang par Gabriel Marrero</title>
+	<title>Rotation et retournement du Yin Yang par Gabriel Marrero</title>
 	<link rel="stylesheet" type="text/css" href="StyleLabo4.css" />
 
 	<!-- Code JavaScript local -->
@@ -29,7 +29,10 @@
 				// A programmer
 				//	objC2D.beginPath();
 				//objC2D.translate(fltMilieu, fltMilieu);
-				objC2D.rotate(Math.PI / 180);
+				//objC2D.scale(0,1);
+				//objC2D.rotate(Math.PI / 180);
+				fltAngleRotation += Math.PI / 180;
+
 			}
 
 			function arreterAnimation() {
@@ -40,14 +43,16 @@
 
 			function dessiner() {
 				objC2D.save();
-
+			
 				const fltMilieu = objCanvas.width / 2;
 				const fltQuart = objCanvas.width / 4;
 				const fltVingtieme = objCanvas.width / 20;
 
 				// Déplacer le contexte au centre du canevas
-				//objC2D.translate(fltMilieu, fltMilieu);
+				objC2D.translate(fltMilieu, fltMilieu);
+				objC2D.rotate(fltAngleRotation);
 				//objC2D.save();
+				//objC2D.scale(-1,1);
 				// Dessiner le symbole Yin Yang
 				objC2D.fillStyle = 'yellow';
 				objC2D.beginPath();
@@ -93,7 +98,9 @@
 			const objCanvas = document.getElementById('monCanvas')
 			const objC2D = objCanvas.getContext('2d')
 			let objCycleAnimation = null;
-			objC2D.translate(objCanvas.width/2,objCanvas.height/2);
+		//	objC2D.translate(objCanvas.width/2,objCanvas.height/2);
+		let fltAngleRotation = 0;
+		//	objC2D.scale(-1,1);
 			dessiner(); // Dessiner une première fois
 			animer();  // Démarrer l'animation
 		
@@ -106,7 +113,7 @@
 	<header class="sTexteCentre sLargeurDiv sEntete">
 		<p>
 			<span class="sTitreApp">
-				Rotation du Yin Yang<br />
+				Rotation et retournement du Yin Yang<br />
 			</span> par
 			<span class="sAuteurApp">
 				Gabriel Marrero
