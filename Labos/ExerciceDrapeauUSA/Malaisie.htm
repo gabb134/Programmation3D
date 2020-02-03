@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Drapeau de la Malaisie par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo5.css" />
+
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        const dessiner = () => {
+            const objCanvas = document.getElementById('monCanvas');
+            const objC2D = objCanvas.getContext('2d');
+
+            // Dessiner le drapeau de la Malaisie \
+            objC2D.beginPath();
+            //objC2D.fillStyle = 'purple';           
+            objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
+
+
+
+
+
+            for (var i = 0; i < 14; i++) {
+
+                if (i % 2 == 0) { //paire , lignes rouges
+                    objC2D.beginPath();
+                    objC2D.fillStyle = 'red';           // Couleur de remplissage
+                    objC2D.fillRect(0, i * 30, objCanvas.width, 30);
+                } else {//impaire, lignes blanches
+                    objC2D.beginPath();
+                    objC2D.fillStyle = 'white';           // Couleur de remplissage
+                    objC2D.fillRect(0, i * 30, objCanvas.width, 30);
+                }
+
+
+            }
+            //contour noir
+            objC2D.strokeStyle = 'black';
+            objC2D.strokeRect(0, 0, objCanvas.width, objCanvas.height)
+
+            //rectangle bleu en haut a gauche
+            objC2D.beginPath();
+            objC2D.fillStyle = 'blue';           // Couleur de remplissage
+            objC2D.fillRect(0, 0, objCanvas.width / 2, 240);
+
+            //demi lune jaune
+            objC2D.beginPath();
+            objC2D.fillStyle = 'yellow';
+            objC2D.arc(120, 120, 90, 0, 2 * Math.PI, false);
+            objC2D.fill();
+
+            //cercle bleu
+            objC2D.beginPath();
+            objC2D.fillStyle = 'blue';
+            objC2D.arc(140, 120, 80, 0, 2 * Math.PI, false);
+            objC2D.fill();
+
+            //les 14 rayons jaunes
+            objC2D.translate(200, 120); //pour se positioner au centre du rectangle bleu
+            objC2D.beginPath();            //  Définir un nouveau tracé
+            objC2D.moveTo(0, 0);       // Le crayon au point 
+            objC2D.lineTo(15, 0);      // Un segment de droite v
+            objC2D.lineTo(5, -60);     // Un segment de droite 
+            objC2D.closePath();           //  Fermer le tracé
+            objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
+            objC2D.fill();             	    // Remplir le tracé
+
+
+            for (var i = 0; i < 14; i++) {
+                objC2D.rotate(Math.PI / 7);
+                objC2D.beginPath();            //  Définir un nouveau tracé
+                objC2D.moveTo(0, 0);       // Le crayon au point 
+                objC2D.lineTo(15, 0);      // Un segment de droite v
+                objC2D.lineTo(5, -70);     // Un segment de droite 
+                objC2D.closePath();           //  Fermer le tracé
+                objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
+                objC2D.fill();
+            }
+
+
+
+
+        }
+    </script>
+</head>
+
+<body onload="dessiner()">
+
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Drapeau de la Malaisie<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="420">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+
+</html>

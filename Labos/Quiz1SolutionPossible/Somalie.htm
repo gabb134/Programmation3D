@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Drapeau de la Somalie par Gabriel Marrero</title>
+	<link rel="stylesheet" type="text/css" href="StyleQuiz1.css" />
+
+
+	<!-- Code JavaScript local -->
+	<script type="text/javascript">
+		const dessiner = () => {
+			const objCanvas = document.getElementById('monCanvas');
+			const objC2D = objCanvas.getContext('2d');
+
+			const intWidth = objCanvas.width;
+			const intHeight = objCanvas.height;
+
+			objC2D.fillStyle = '#4189DD';  //couleur bleu du drapeau de la Somalie
+			objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
+
+			// Appel à la fonction creerEtoile pour dessiner le drapeau de la Somalie
+			//Couleur blanche pour le fillColor: "#ffffff" 
+			creerEtoile(intWidth / 2, intHeight / 2, intHeight / 13, 2.618 * intHeight / 13, 5, "#ffffff", null);
+
+
+
+			// Dessiner une étoile permet de dessiner une étoile à 5 sommets internes et 5 sommets externes.
+			//La fonction est appelée ci-dessus avec les informations vous permettant d'afficher l'étoile 
+			//au milieu du canevas (coordonnées x, y). Cela nous permet de placer l'étoile à d'autres 
+			//endroits sur le canevas 
+			//La fonction doit permettre de remplir l'étoile si on lui passe une chaine de caractère 
+			//représentant une couleur à fillColor
+			//La fonction doit permettre de tracer le contour de l'étoile si on lui passe une chaine de caractère 
+			//représentant une couleur à strokeColor
+			// x: Coordonnée x du centre de l'étoile.
+			// y: Coordonnée y du centre de l'étoile.
+			// nbPoints: Le nombre de sommets externes/internes (5 dans le cas du drapeau de la Somalie)
+			// or (outer Radius: rayon externe) - Le rayon d'un cercle imaginaire  externe où se trouvent les sommets externes de l'étoile
+			// ir (inner Radius: rayon interne) - Le rayon d'un cercle imaginaire  interne où se trouvent les sommets internes de l'étoile
+			function creerEtoile(x, y, ir, or, nbPoints, fillColor) {
+				//Votre code ici
+
+				var longeurEtoile = 40;
+				objC2D.translate(300, objCanvas.height / 2);
+
+				// initial offset rotation so our star is straight
+				objC2D.rotate((Math.PI * 1 / 10));
+
+				// make a point, 5 times
+				for (var i = 5; i--;) {
+					// draw line up
+					objC2D.lineTo(0, longeurEtoile);
+					// move origin to current same location as pen
+					objC2D.translate(0, longeurEtoile);
+					// rotate the drawing board
+					objC2D.rotate((Math.PI * 2 / 10));
+					// draw line down
+					objC2D.lineTo(0, -longeurEtoile);
+					// again, move origin to pen...
+					objC2D.translate(0, -longeurEtoile);
+					// ...and rotate, ready for next arm
+					objC2D.rotate(-(Math.PI * 6 / 10));
+				}
+				// last line to connect things up
+				objC2D.lineTo(0, longeurEtoile);
+				objC2D.closePath();
+				objC2D.fillStyle = 'white';   // Style de couleur du remplissage
+				objC2D.fill();
+
+
+
+			}
+
+
+		}
+
+
+	</script>
+</head>
+
+<body onload="dessiner()">
+	<header class="sTexteCentre sLargeurDiv sEntete">
+		<p>
+			<span class="sTitreApp">
+				Drapeau de la Somalie<br />
+			</span> par
+			<span class="sAuteurApp">
+				Gabriel Marrero
+			</span>
+		</p>
+	</header>
+
+	<main class="sLargeurDiv sCorps">
+		<canvas id="monCanvas" width="640" height="320">
+			Votre navigateur ne supporte pas la balise canvas
+		</canvas>
+	</main>
+
+	<footer class="sLargeurDiv sPiedDePage">
+		<p>
+			<a href="http://www.cgodin.qc.ca">
+				<img src="logoCGG.jpg" alt="logoCGG" />
+			</a>
+			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+				Département d'informatique du Cégep Gérald-Godin
+			</a>
+			<br />
+			&copy; 2020
+		</p>
+	</footer>
+</body>
+
+</html>
