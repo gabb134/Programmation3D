@@ -31,7 +31,16 @@
 				//objC2D.translate(fltMilieu, fltMilieu);
 				//objC2D.scale(0,1);
 				//objC2D.rotate(Math.PI / 180);
-				fltAngleRotation += Math.PI / 180;
+
+				fltScaleX-=0.1;
+				//fltAngleRotation += Math.PI / 180;
+
+
+				//for (let i = 1; i > 0; i-0.1) {
+			
+					
+				//}
+				
 
 			}
 
@@ -43,14 +52,27 @@
 
 			function dessiner() {
 				objC2D.save();
-			
+
 				const fltMilieu = objCanvas.width / 2;
 				const fltQuart = objCanvas.width / 4;
 				const fltVingtieme = objCanvas.width / 20;
+				 
 
 				// Déplacer le contexte au centre du canevas
 				objC2D.translate(fltMilieu, fltMilieu);
 				objC2D.rotate(fltAngleRotation);
+			
+				//if(fltScaleX>=0)
+				//objC2D.restore();
+				objC2D.scale(fltScaleX, 1)
+				console.log(fltScaleX)
+
+				if(fltScaleX==0.10000000000000014){
+					//sconsole.log("allo")
+				//	fltScaleX=1;
+				//	objC2D.restore();
+				}
+					
 				//objC2D.save();
 				//objC2D.scale(-1,1);
 				// Dessiner le symbole Yin Yang
@@ -92,18 +114,22 @@
 
 				objC2D.restore();
 				//objC2D.translate(fltMilieu, fltMilieu);
+		//	console.log(fltScaleX)
 
 			}
 
 			const objCanvas = document.getElementById('monCanvas')
 			const objC2D = objCanvas.getContext('2d')
 			let objCycleAnimation = null;
-		//	objC2D.translate(objCanvas.width/2,objCanvas.height/2);
-		let fltAngleRotation = 0;
-		//	objC2D.scale(-1,1);
+			//	objC2D.translate(objCanvas.width/2,objCanvas.height/2);
+			let fltAngleRotation = 0;
+			//objC2D.save();
+			let fltScaleX ;
+			//console.log(fltScaleX)
+			//	objC2D.scale(-1,1);
 			dessiner(); // Dessiner une première fois
 			animer();  // Démarrer l'animation
-		
+
 		}
 	</script>
 </head>
