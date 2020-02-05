@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Théorie 4B démo 4</title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	let objCanvas = null;
+	let objC2D = null;
+	let intXCercle = null;
+	let intYCercle = null;
+	let intRayonCercle = null;
+
+    function initDessin() {
+        objCanvas = document.getElementById('monCanvas');
+        objC2D = objCanvas.getContext('2d');
+        intXCercle = objCanvas.width / 2;
+        intYCercle = objCanvas.height / 2;
+        intRayonCercle = objCanvas.height / 10;
+		dessiner(); // Dessiner une première fois
+    }
+     	
+	// Pour effacer le dessin
+    function effacerDessin() {
+        objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
+    }
+			
+	// Pour dessiner
+	function dessiner() {   
+		// Sauvegarder le contexte
+		objC2D.save(); 
+		
+    	const objDegrade=objC2D.createRadialGradient(intXCercle,intYCercle,0,intXCercle,intYCercle,intRayonCercle);
+		objDegrade.addColorStop(0,'white');
+		objDegrade.addColorStop(1,'crimson');
+		objC2D.fillStyle=objDegrade;
+		objC2D.strokeStyle='black';
+		objC2D.lineWidth='1';
+		objC2D.beginPath();
+		objC2D.arc(intXCercle, intYCercle, intRayonCercle, 0, 2 * Math.PI, false);
+		objC2D.stroke();
+		objC2D.fill();
+
+		// Restaurer le contexte
+		objC2D.restore();
+    }
+
+    function prendreCercle() {
+        // La position de la souris par rapport au canevas
+      	const objElemRect = event.target.getBoundingClientRect();
+		const intXSouris = event.clientX - objElemRect.left;
+        const intYSouris = event.clientY - objElemRect.top;
+		        
+        if (!objC2D.isPointInPath(intXSouris, intYSouris))
+         {  // Refuser le glisser-déposer
+			event.preventDefault();
+         }
+        else {
+            const objImage = new Image();
+            objImage.src = objCanvas.toDataURL();
+            event.dataTransfer.setDragImage(objImage, intXCercle, intYCercle);
+        }
+    }
+
+    function permettreLeDepot() {
+		event.preventDefault();
+    }
+
+   function deposerCercle() {
+       	// La nouvelle position du cercle est la position de la souris
+        const objElemRect = event.target.getBoundingClientRect();
+		intXCercle = event.clientX - objElemRect.left;
+		intYCercle = event.clientY - objElemRect.top;
+
+		// Redessine
+        effacerDessin(); dessiner();
+	}
+	
+   </script>
+</head>
+
+<body onload="initDessin()"> 
+    <p> Théorie 4B-4: Le glisser-déposer - prise 2  <br /> par Ronald Jean-Julien </p>
+
+	<canvas id="monCanvas" width="400" height="400" tabIndex="1" draggable="true" 
+            ondragstart="prendreCercle()" ondrop="deposerCercle()" ondragover="permettreLeDepot()">
+
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+	
+</body>
+
+</html>

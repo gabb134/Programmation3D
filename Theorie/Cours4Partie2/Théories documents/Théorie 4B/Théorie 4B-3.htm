@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Théorie 4B démo 3</title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+  
+      function demarrerGlisserDeposer() {
+          // C'est l'élément identifié qui sera déposé plus tard
+          event.dataTransfer.setData('Text', event.target.id);
+		 }
+
+      function permettreLeDepot() {
+		  // Pour permettre le dépôt
+          event.preventDefault(); 
+      }
+
+      function deposer() {
+           // Aller chercher l'id de ce qui doit être déposé
+          const strIdElement = event.dataTransfer.getData('Text');
+		   // Aller chercher l'élément à déposer 
+		  const objElementDepose = document.getElementById(strIdElement);
+          // Déplacer cet élément
+		  event.target.appendChild(objElementDepose);
+		  // Remettre la bordure en noir
+		  mettreBordureEnNoir();
+      }
+
+      function mettreBordureEnVert() { 
+         event.target.style.borderColor = 'green';
+      }
+
+      function mettreBordureEnNoir() {
+         event.target.style.borderColor = "black";
+      }
+
+  </script>
+</head>
+
+<body onload="initAnimation()"> 
+    <p> Théorie 4B-3: Le glisser-déposer - prise 1<br /> par Ronald Jean-Julien </p>
+	
+	<div id="divPanneau1" style="border:2px solid black;height:60px;width:110px"> 
+	    <img id="imgLogo" src="logoCGG.jpg" alt="logo Cégep" draggable="true" ondragstart="demarrerGlisserDeposer()"/>
+    </div>
+    <p> Glisser-déposer le logo dans le cadre </p>
+	<div id="divPanneau2" style="border:2px solid black;height:60px;width:110px" 
+	     ondragover="permettreLeDepot()" ondrop="deposer()" ondragenter="mettreBordureEnVert()" ondragleave="mettreBordureEnNoir()"> 
+    </div>
+</body>
+
+</html>

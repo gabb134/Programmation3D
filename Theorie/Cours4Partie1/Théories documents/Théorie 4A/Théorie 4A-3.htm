@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Théorie 4A démo 3</title>
+	<link rel="stylesheet" type="text/css" href="" />
+	<!-- Code JavaScript local -->
+	<script type="text/javascript">
+		const démarrerAnimation = () => {
+			function animer() {
+				dessiner(); // Dessiner une première fois
+				// Un cycle d'animation à répétition
+				cycleAnimer();
+			}
+
+			// Un cycle d'animation
+			function cycleAnimer() {
+				requestAnimationFrame(cycleAnimer);
+				effacerDessin();
+				mettreAjourAnimation();
+				dessiner();
+			}
+
+			// Pour effacer le dessin
+			function effacerDessin() {
+				objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
+			}
+
+			// Pour mettre à jour l'angle de rotation
+			function mettreAjourAnimation() {
+				// Rotation par coup de 18 degrés
+				fltAngleRotation += Math.PI / 80;
+			}
+
+			// Pour dessiner
+			function dessiner() {
+				// Sauvegarder le contexte
+				objC2D.save();
+
+				const intRayonCercle = Math.floor(objCanvas.width / 10);
+				const intXCercle = Math.floor(objCanvas.width / 4);
+				const intDecalOmbre = Math.floor(objCanvas.width / 10);
+
+				// L'ombrage
+				objC2D.shadowColor = 'black';
+				objC2D.shadowBlur = 10;
+				objC2D.shadowOffsetX = intDecalOmbre;
+				objC2D.shadowOffsetY = intDecalOmbre;
+
+				// Déplacer le contexte au centre du canevas
+				objC2D.translate(objCanvas.width / 2, objCanvas.height / 2);
+
+				// Faire tourner le contexte
+				objC2D.rotate(fltAngleRotation);
+
+				// Dessiner la forme qui tourne
+				objC2D.strokeStyle = 'black';
+				objC2D.lineWidth = 5;
+				objC2D.beginPath();
+				objC2D.moveTo(-intXCercle, 0);
+				objC2D.lineTo(intXCercle, 0);
+				objC2D.closePath();
+				objC2D.stroke();
+
+				const objDegrade = objC2D.createRadialGradient(intXCercle, 0, 0, intXCercle, 0, intRayonCercle);
+				objDegrade.addColorStop(0, 'rgb(255,255,255)');
+				objDegrade.addColorStop(1, 'rgb(128,0,0)');
+				objC2D.fillStyle = objDegrade;
+				objC2D.beginPath();
+				objC2D.arc(intXCercle, 0, intRayonCercle, 0, 2 * Math.PI, false);
+				objC2D.stroke();
+				objC2D.fill();
+
+				const objDegrade2 = objC2D.createRadialGradient(-intXCercle, 0, 0, -intXCercle, 0, intRayonCercle);
+				objDegrade2.addColorStop(0, 'rgb(255,255,255)');
+				objDegrade2.addColorStop(1, 'rgb(128,0,0)');
+				objC2D.fillStyle = objDegrade2;
+				objC2D.beginPath();
+				objC2D.arc(-intXCercle, 0, intRayonCercle, 0, 2 * Math.PI, false);
+				objC2D.stroke();
+				objC2D.fill();
+
+				// Restaurer le contexte
+				objC2D.restore();
+			}
+
+			const objCanvas = document.getElementById('monCanvas')
+			const objC2D = objCanvas.getContext('2d')
+			let fltAngleRotation = 0
+			animer()
+		}
+
+	</script>
+</head>
+
+<body onload="démarrerAnimation()">
+	<p> Théorie 4A-3: La requête d'animation <br /> par Ronald Jean-Julien </p>
+	<canvas id="monCanvas" width="400" height="400">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+
+</html>
