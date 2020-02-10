@@ -34,6 +34,19 @@
 				fltRotation += fltAngleRotation;
 
 				fltPosition += fltDeplacement;
+
+			/*	if (fltRotation > 6 && fltAngleRotation == Math.PI / 180) {
+					//posCercle =-650;
+					//fltPosition = 0;
+					//	objC2D.translate(-650 , fltMilieu);
+					dessiner(-650);
+
+				}*/
+
+				if(fltPosition>objCanvas.width / 2){
+					fltPosition=0-objCanvas.width/2;
+					//dessiner(-650)
+				}
 			}
 
 			function arreterAnimation() {
@@ -67,13 +80,9 @@
 						fltDeplacement *=-1;
 						console.log("allo");
 					}*/
-					//console.log(posCercle+fltPosition);
-				if (fltRotation > 6 && fltAngleRotation == Math.PI / 180 ) {
-					//posCercle =-650;
-					//fltPosition = 0;
-				//	objC2D.translate(-650 , fltMilieu);
-					
-				}
+				//console.log(posCercle+fltPosition);
+				console.log(fltPosition)
+		
 
 
 				//console.log(fltRotation);
@@ -130,10 +139,10 @@
 			let fltRotation = 0;
 			let fltPosition = 0;
 			let fltAngleRotation = Math.PI / 180;
-			let fltDeplacement = 0.9;
+			let fltDeplacement =1;
 
 			//dessiner(-650);
-			
+
 			dessiner(10); // Dessiner une première fois
 			dessiner(650);
 			animer();  // Démarrer l'animation
