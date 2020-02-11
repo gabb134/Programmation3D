@@ -1,131 +1,131 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
 <head>
 
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Théorie 4 démo 5</title>
-  <link rel="stylesheet" type="text/css" href="" />
-  <!-- Code JavaScript local -->
-  <script type="text/javascript"> 
-	let objCanvas = null;
-	let objC2D = null;
-	let intXCercle = null;
-	let intYCercle = null;
-	let intRayonCercle = null;
-	let intXSouris = null;
-	let intYSouris = null;
-	let binCercleGlisse = false;
-    
-    function initDessin() {
-        objCanvas = document.getElementById('monCanvas');
-        objC2D = objCanvas.getContext('2d');
-        intXCercle = objCanvas.width / 2;
-        intYCercle = objCanvas.height / 2;
-        intRayonCercle = objCanvas.height / 10;
-        binCercleGlisse = false; // Le cercle ne glisse pas
-		dessiner(); // Dessiner une première fois
-    }
-     	
-	// Pour effacer le dessin
-    function effacerDessin() {
-        objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
-    }
-			
-	// Pour dessiner
-	function dessiner() {   
-		// Sauvegarder le contexte
-		objC2D.save(); 
-		
-		// Si le cercle glisse, le décaler et faire de l'ombrage
-		if (binCercleGlisse)
-		{	// Déplacer le contexte (le cercle conserve sa position)
-			objC2D.translate(-10,-10);
-			objC2D.shadowColor='black';
-			objC2D.shadowBlur=10;
-			objC2D.shadowOffsetX=10;
-			objC2D.shadowOffsetY=10;
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Théorie 4 démo 5</title>
+	<link rel="stylesheet" type="text/css" href="" />
+	<!-- Code JavaScript local -->
+	<script type="text/javascript">
+		let objCanvas = null;
+		let objC2D = null;
+		let intXCercle = null;
+		let intYCercle = null;
+		let intRayonCercle = null;
+		let intXSouris = null;
+		let intYSouris = null;
+		let binCercleGlisse = false;
+
+		function initDessin() {
+			objCanvas = document.getElementById('monCanvas');
+			objC2D = objCanvas.getContext('2d');
+			intXCercle = objCanvas.width / 2;
+			intYCercle = objCanvas.height / 2;
+			intRayonCercle = objCanvas.height / 10;
+			binCercleGlisse = false; // Le cercle ne glisse pas
+			dessiner(); // Dessiner une première fois
 		}
-		
-		// Dessiner le cercle
-    	const objDegrade=objC2D.createRadialGradient(intXCercle,intYCercle,0,intXCercle,intYCercle,intRayonCercle);
-		objDegrade.addColorStop(0,'white');
-		objDegrade.addColorStop(1,'crimson');
-		objC2D.fillStyle=objDegrade;
-		objC2D.strokeStyle='black';
-		objC2D.lineWidth=1;
-		objC2D.beginPath();
-		objC2D.arc(intXCercle, intYCercle, intRayonCercle, 0, 2 * Math.PI, false);
-		objC2D.stroke();
-		objC2D.fill();
 
-		// Restaurer le contexte
-		objC2D.restore();
-    }
+		// Pour effacer le dessin
+		function effacerDessin() {
+			objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
+		}
 
-    function prendreCercle() {
-        // La position de la souris par rapport au canevas
-        const objElemRect = event.target.getBoundingClientRect();
-        intXSouris = event.clientX - objElemRect.left;
-        intYSouris = event.clientY - objElemRect.top;
+		// Pour dessiner
+		function dessiner() {
+			// Sauvegarder le contexte
+			objC2D.save();
 
-		if (!objC2D.isPointInPath(intXSouris, intYSouris)) {
-           // Si la souris n'est pas en collision avec le cercle,
-		   // refuser le glisser-déposer
-		   // Ici, l'événement onDragOver ne sera pas appelé
-            event.preventDefault();
-        }
-        else {
-		    // Le glisser-déposer est permis.
-			// L'événement onDragOver va être appelé
-            // Dessiner le cercle avec ombrage
-            effacerDessin(); binCercleGlisse = true; dessiner();
+			// Si le cercle glisse, le décaler et faire de l'ombrage
+			if (binCercleGlisse) {	// Déplacer le contexte (le cercle conserve sa position)
+				objC2D.translate(-10, -10);
+				objC2D.shadowColor = 'black';
+				objC2D.shadowBlur = 10;
+				objC2D.shadowOffsetX = 10;
+				objC2D.shadowOffsetY = 10;
+			}
 
-            // Le fantôme est une image transparente 
-            const objImage = document.getElementById('imgTransparent');
-            event.dataTransfer.setDragImage(objImage, 0, 0);
-        }
-    }
+			// Dessiner le cercle
+			const objDegrade = objC2D.createRadialGradient(intXCercle, intYCercle, 0, intXCercle, intYCercle, intRayonCercle);
+			objDegrade.addColorStop(0, 'white');
+			objDegrade.addColorStop(1, 'crimson');
+			objC2D.fillStyle = objDegrade;
+			objC2D.strokeStyle = 'black';
+			objC2D.lineWidth = 1;
+			objC2D.beginPath();
+			objC2D.arc(intXCercle, intYCercle, intRayonCercle, 0, 2 * Math.PI, false);
+			objC2D.stroke();
+			objC2D.fill();
 
-    function glisserCercle() {
-        event.preventDefault(); // Permettre le dépôt
+			// Restaurer le contexte
+			objC2D.restore();
+		}
 
-        // Calculer la distance (x,y) entre l'ancienne 
-        // postion de la souris et la nouvelle
-        const objElemRect = event.target.getBoundingClientRect();
-        const intXSouris2 = event.clientX - objElemRect.left;
-        const intYSouris2 = event.clientY - objElemRect.top;
-		// La distance entre l'ancienne position de la souris
-		// et sa position actuelle
-        const intDistanceX = intXSouris2 - intXSouris;
-        const intDistanceY = intYSouris2 - intYSouris;
-                
-        if ((intXCercle + intRayonCercle + intDistanceX < objCanvas.width) && 
-            (intXCercle - intRayonCercle + intDistanceX > 0) &&
-			(intYCercle + intRayonCercle + intDistanceY < objCanvas.height) &&
-			(intYCercle - intRayonCercle + intDistanceY > 0))
-			{	// La nouvelle position du cercle
-                intXCercle += intDistanceX; intYCercle += intDistanceY; 
-					// Redesssiner (avec ombrage)
+		function prendreCercle() {
+			// La position de la souris par rapport au canevas
+			const objElemRect = event.target.getBoundingClientRect();
+			intXSouris = event.clientX - objElemRect.left;
+			intYSouris = event.clientY - objElemRect.top;
+
+			if (!objC2D.isPointInPath(intXSouris, intYSouris)) {
+				// Si la souris n'est pas en collision avec le cercle,
+				// refuser le glisser-déposer
+				// Ici, l'événement onDragOver ne sera pas appelé
+				event.preventDefault();
+			}
+			else {
+				// Le glisser-déposer est permis.
+				// L'événement onDragOver va être appelé
+				// Dessiner le cercle avec ombrage
 				effacerDessin(); binCercleGlisse = true; dessiner();
-				intXSouris = intXSouris2;  intYSouris = intYSouris2;
-            }  
-	}
 
-	function deposerCercle() {
-	    effacerDessin(); binCercleGlisse = false; dessiner();
-	}
-   </script>
+				// Le fantôme est une image transparente 
+				const objImage = document.getElementById('imgTransparent');
+				event.dataTransfer.setDragImage(objImage, 0, 0);
+			}
+		}
+
+		function glisserCercle() {
+			event.preventDefault(); // Permettre le dépôt
+
+			// Calculer la distance (x,y) entre l'ancienne 
+			// postion de la souris et la nouvelle
+			const objElemRect = event.target.getBoundingClientRect();
+			const intXSouris2 = event.clientX - objElemRect.left;
+			const intYSouris2 = event.clientY - objElemRect.top;
+			// La distance entre l'ancienne position de la souris
+			// et sa position actuelle
+			const intDistanceX = intXSouris2 - intXSouris;
+			const intDistanceY = intYSouris2 - intYSouris;
+
+			if ((intXCercle + intRayonCercle + intDistanceX < objCanvas.width) &&
+				(intXCercle - intRayonCercle + intDistanceX > 0) &&
+				(intYCercle + intRayonCercle + intDistanceY < objCanvas.height) &&
+				(intYCercle - intRayonCercle + intDistanceY > 0)) {	// La nouvelle position du cercle
+				intXCercle += intDistanceX; intYCercle += intDistanceY;
+				// Redesssiner (avec ombrage)
+				effacerDessin(); binCercleGlisse = true; dessiner();
+				intXSouris = intXSouris2;
+				intYSouris = intYSouris2;
+			}
+		}
+
+		function deposerCercle() {
+			effacerDessin(); binCercleGlisse = false; dessiner();
+		}
+	</script>
 </head>
 
-<body onload="initDessin()"> 
-    <p> Théorie 4B-5: Le glisser-déposer - Prise 3<br /> par Ronald Jean-Julien </p>
- 	<canvas id="monCanvas" width="400" height="400" tabIndex="1" draggable="true" 
-    ondragstart="prendreCercle()" ondragover="glisserCercle()" ondrop="deposerCercle()" 
-    ondragleave="deposerCercle()" ondragenter="glisserCercle()" >
+<body onload="initDessin()">
+	<p> Théorie 4B-5: Le glisser-déposer - Prise 3<br /> par Ronald Jean-Julien </p>
+	<canvas id="monCanvas" width="400" height="400" tabIndex="1" draggable="true" ondragstart="prendreCercle()"
+		ondragover="glisserCercle()" ondrop="deposerCercle()" ondragleave="deposerCercle()"
+		ondragenter="glisserCercle()">
 		Votre navigateur ne supporte pas la balise canvas
 	</canvas>
-    <img id="imgTransparent" src="Transparent.gif" alt="Transparent" />
+	<img id="imgTransparent" src="Transparent.gif" alt="Transparent" />
 
 </body>
 
