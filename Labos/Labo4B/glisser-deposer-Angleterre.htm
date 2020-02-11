@@ -17,6 +17,13 @@
         let intXSouris = null;
         let intYSouris = null;
         let strTexte = "";
+        function initDessiner() {
+            objCanvas = document.getElementById('monCanvas');
+            objC2D = objCanvas.getContext('2d');
+            intXTexte = objCanvas.width / 2;
+            intYTexte = objCanvas.height / 2;
+            dessiner();
+        }
 
         const dessiner = () => {
             objC2D.save();
@@ -33,7 +40,7 @@
             var textSplit = strTexte.split('\n');
 
             for (let i = 0; i < textSplit.length; i++) {
-                objC2D.fillText(textSplit[i], objCanvas.width / 2, objCanvas.height / 2 + (i * espaceTexte));
+                objC2D.fillText(textSplit[i],intXTexte,intYTexte  + (i * espaceTexte));
 
             }
 
@@ -134,19 +141,15 @@
             objC2D.stroke();
 
 
-            //     objC2D.globalCompositeOperation = 'destination-in';
-            //   objC2D.fillRect(0,0,objCanvas.width,objCanvas.height);
+            //objC2D.globalCompositeOperation = 'destination-in';
+            //objC2D.fillRect(0,0,objCanvas.width,objCanvas.height);
 
 
             //   objC2D.fillText(strTexte2, objCanvas.width / 2, 200);
 
             objC2D.restore();
         }
-        function initDessiner() {
-            objCanvas = document.getElementById('monCanvas');
-            objC2D = objCanvas.getContext('2d');
-            dessiner();
-        }
+
         function effacerDessin() {
             objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
         }
@@ -156,19 +159,25 @@
             let objElementRect = event.target.getBoundingClientRect();
             intXSouris = event.clientX - objElementRect.left;
             intYSouris = event.clientY - objElementRect.top;
-            console.log(intXSouris + ", " + intYSouris)
+            // console.log("Coordonees : "+"x: "+intXSouris + ", y:" + intYSouris)
             //  console.log("allo")
 
             if (!objC2D.isPointInPath(intXSouris, intYSouris)) {
-                // Si la souris n'est pas en collision avec le cercle,
+                // Si la souris n'est pas en collision avec le texte,
                 // refuser le glisser-déposer
                 // Ici, l'événement onDragOver ne sera pas appelé
                 event.preventDefault();
             } else {
+                // Le glisser-déposer est permis.
+                // L'événement onDragOver va être appelé
+                // Dessiner le texte 
+                effacerDessin();
+                dessiner();
+
                 // Le fantôme est une image transparente 
-                let objImgae = new Image();
-                objImgae.src = "Transparent.gif";
-                event.dataTransfer.setDragImage(objImgae, intXTexte, intYTexte);
+                let objImgage = new Image();
+                objImgage.src = objCanvas.toDataURL();
+                event.dataTransfer.setDragImage(objImgage, intXSouris, intYSouris);
 
             }
         }
@@ -177,9 +186,9 @@
 
             // Calculer la distance (x,y) entre l'ancienne 
             // postion de la souris et la nouvelle
-            let objElementRect2 = event.target.getBoundingClientRect();
-            intXSouris2 = event.clientX - objElementRect2.left;
-            intYSouris2 = event.clientY - objElementRect2.top;
+            let objElementRect = event.target.getBoundingClientRect();
+            let intXSouris2 = event.clientX - objElementRect.left;
+            let intYSouris2 = event.clientY - objElementRect.top;
 
             // La distance entre l'ancienne position de la souris
             // et sa position actuelle
@@ -188,14 +197,40 @@
 
             //longueur du texte 
             let longueurText = objC2D.measureText(strTexte).width;
-            console.log("longueur text : " + longueurText);
+            // console.log("longueur text : " + longueurText);
 
 
+            /* if ((intXTexte + intDistanceX < objCanvas.width) &&
+                 (intXTexte + intDistanceX > 0) && (intYTexte + intDistanceY < objCanvas.height) && (intYTexte + intDistanceY > 0)) {	// La nouvelle position du texte
+ 
+ 
+                 intXTexte += intDistanceX;
+                 intYTexte += intDistanceY;
+                 // Redesssiner (avec ombrage)
+                 effacerDessin();
+                 dessiner();
+                 intXSouris = intXSouris2;
+                 intYSouris = intYSouris2;
+             }*/
+
+            intXTexte += intDistanceX;
+            intYTexte += intDistanceY;
+            // Redesssiner (avec ombrage)
+            effacerDessin();
+            dessiner();
+            intXSouris = intXSouris2;
+            intYSouris = intYSouris2;
+            //   console.log("intXTexte: " + intXTexte + " " + "intYTexte: " + intYTexte)
+            // console.log(intDistanceX)
+            // effacerDessin();
+            //   dessiner();
 
 
 
         }
         function deposerTexte() {
+
+
             effacerDessin();
             dessiner();
         }
@@ -217,11 +252,12 @@
 
     <main class="sLargeurDiv sCorps">
         <canvas id="monCanvas" width="640" height="320" tabindex="1" draggable="true" ondragstart="prendreTexte()"
-            ondragover="glisserTexte()" ondrop="deposerTexte()">
+            ondragover="glisserTexte()" ondrop="deposerTexte()" ondragleave="deposerTexte()">
             Votre navigateur ne supporte pas la balise canvas
         </canvas>
-    </main>
 
+    </main>
+    <img id="imgTransparent" src="Transparent.gif" alt="Transparent" />
     <footer class="sLargeurDiv sPiedDePage">
         <p>
             <a href="http://www.cgodin.qc.ca">

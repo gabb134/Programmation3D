@@ -93,18 +93,21 @@
 			// Calculer la distance (x,y) entre l'ancienne 
 			// postion de la souris et la nouvelle
 			const objElemRect = event.target.getBoundingClientRect();
-			const intXSouris2 = event.clientX - objElemRect.left;
-			const intYSouris2 = event.clientY - objElemRect.top;
+			let intXSouris2 = event.clientX - objElemRect.left;
+			let intYSouris2 = event.clientY - objElemRect.top;
 			// La distance entre l'ancienne position de la souris
 			// et sa position actuelle
 			const intDistanceX = intXSouris2 - intXSouris;
 			const intDistanceY = intYSouris2 - intYSouris;
 
+			console.log(intDistanceX)
+
 			if ((intXCercle + intRayonCercle + intDistanceX < objCanvas.width) &&
 				(intXCercle - intRayonCercle + intDistanceX > 0) &&
 				(intYCercle + intRayonCercle + intDistanceY < objCanvas.height) &&
 				(intYCercle - intRayonCercle + intDistanceY > 0)) {	// La nouvelle position du cercle
-				intXCercle += intDistanceX; intYCercle += intDistanceY;
+				intXCercle += intDistanceX; 
+				intYCercle += intDistanceY;
 				// Redesssiner (avec ombrage)
 				effacerDessin(); binCercleGlisse = true; dessiner();
 				intXSouris = intXSouris2;
