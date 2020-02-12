@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Le glisser-déposer du drapeau de l'Angleterre par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo1.css" />
+
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript">
+        let objCanvas = null;
+        let objC2D = null;
+        let intXTexte = null;
+        let intYTexte = null;
+        let intXSouris = null;
+        let intYSouris = null;
+        let strTexte = "";
+        function initDessiner() {
+            objCanvas = document.getElementById('monCanvas');
+            objC2D = objCanvas.getContext('2d');
+            intXTexte = objCanvas.width / 2;
+            intYTexte = objCanvas.height / 2;
+            dessiner();
+        }
+
+        const dessiner = () => {
+            objC2D.save();
+            //Texte union jack
+
+
+            objC2D.beginPath();
+            strTexte = "UNION\nJACK";
+            objC2D.textAlign = "center";
+            objC2D.textBaseLine = "bottom";
+            objC2D.font = '150pt fantasy';
+
+            var espaceTexte = 160;
+            var textSplit = strTexte.split('\n');
+
+            for (let i = 0; i < textSplit.length; i++) {
+                objC2D.fillText(textSplit[i],intXTexte,intYTexte  + (i * espaceTexte));
+
+            }
+
+            objC2D.globalCompositeOperation = 'source-atop';
+
+
+            // Dessiner votre drapeau de l'Angleterre ici
+
+            //rectangle bleu
+            objC2D.beginPath();   	             // Définir un tracé
+            objC2D.rect(0, 0, 640, 320);       // Un  tracé rectangulaire
+            objC2D.fillStyle = 'navy';        // Couleur de remplissage
+            objC2D.fill();
+
+            //ligne blanche diagonale de gauche a droite
+            objC2D.beginPath();
+            objC2D.moveTo(0, 0);
+            objC2D.lineTo(640, 320);
+            objC2D.lineWidth = 60;
+            objC2D.strokeStyle = 'white';        // Couleur de remplissage
+            objC2D.stroke();
+
+
+            //ligne blanche diagonale de droite a gauche
+            objC2D.beginPath();
+            objC2D.moveTo(640, 0);
+            objC2D.lineTo(0, 320);
+            objC2D.lineWidth = 60;
+            objC2D.strokeStyle = 'white';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //ligne rouge en haut a gauche
+            objC2D.beginPath();
+            objC2D.moveTo(-2, 11);
+            objC2D.lineTo(318, 171);
+            objC2D.lineWidth = 20;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //ligne rouge en haut a droite
+            objC2D.beginPath();
+            objC2D.moveTo(640, -10);
+            objC2D.lineTo(320, 150);
+            objC2D.lineWidth = 20;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //ligne rouge en bas a gauche
+            objC2D.beginPath();
+            objC2D.moveTo(0, 330);
+            objC2D.lineTo(320, 170);
+            objC2D.lineWidth = 20;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //ligne rouge en bas a droite
+            objC2D.beginPath();
+            objC2D.moveTo(645, 310);
+            objC2D.lineTo(325, 150);
+            objC2D.lineWidth = 20;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //la croix blanche au milieu
+            objC2D.beginPath();   	             // Définir un tracé
+            objC2D.moveTo(320, 0);      // Un  tracé rectangulaire
+            objC2D.lineTo(320, 320);
+            objC2D.lineWidth = 100;
+            objC2D.strokeStyle = 'white';        // Couleur de remplissage
+            objC2D.stroke();
+
+            objC2D.beginPath();   	             // Définir un tracé
+            objC2D.moveTo(0, 160);      // Un  tracé rectangulaire
+            objC2D.lineTo(640, 160);
+            objC2D.lineWidth = 100;
+            objC2D.strokeStyle = 'white';        // Couleur de remplissage
+            objC2D.stroke();
+            //la croix rouge au milieu
+            objC2D.beginPath();   	             // Définir un tracé
+            objC2D.moveTo(320, 0);      // Un  tracé rectangulaire
+            objC2D.lineTo(320, 320);
+            objC2D.lineWidth = 60;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            objC2D.beginPath();   	             // Définir un tracé
+            objC2D.moveTo(0, 160);      // Un  tracé rectangulaire
+            objC2D.lineTo(640, 160);
+            objC2D.lineWidth = 60;
+            objC2D.strokeStyle = 'red';        // Couleur de remplissage
+            objC2D.stroke();
+
+            //contour noir
+            objC2D.beginPath();
+            objC2D.rect(0, 0, 640, 320);
+            objC2D.lineWidth = 5;
+            objC2D.strokeStyle = 'black';
+            objC2D.stroke();
+
+
+            //objC2D.globalCompositeOperation = 'destination-in';
+            //objC2D.fillRect(0,0,objCanvas.width,objCanvas.height);
+
+
+            //   objC2D.fillText(strTexte2, objCanvas.width / 2, 200);
+
+            objC2D.restore();
+        }
+
+        function effacerDessin() {
+            objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
+        }
+
+        function prendreTexte() {
+            // La position de la souris par rapport au canevas
+            let objElementRect = event.target.getBoundingClientRect();
+            intXSouris = event.clientX - objElementRect.left;
+            intYSouris = event.clientY - objElementRect.top;
+            // console.log("Coordonees : "+"x: "+intXSouris + ", y:" + intYSouris)
+            //  console.log("allo")
+
+            if (!objC2D.isPointInPath(intXSouris, intYSouris)) {
+                // Si la souris n'est pas en collision avec le texte,
+                // refuser le glisser-déposer
+                // Ici, l'événement onDragOver ne sera pas appelé
+                event.preventDefault();
+            } else {
+                // Le glisser-déposer est permis.
+                // L'événement onDragOver va être appelé
+                // Dessiner le texte 
+                effacerDessin();
+                dessiner();
+
+                // Le fantôme est une image transparente 
+                let objImgage = new Image();
+                objImgage.src = objCanvas.toDataURL();
+                event.dataTransfer.setDragImage(objImgage, intXSouris, intYSouris);
+
+            }
+        }
+        function glisserTexte() {
+            event.preventDefault(); // Permettre le dépôt
+
+            // Calculer la distance (x,y) entre l'ancienne 
+            // postion de la souris et la nouvelle
+            let objElementRect = event.target.getBoundingClientRect();
+            let intXSouris2 = event.clientX - objElementRect.left;
+            let intYSouris2 = event.clientY - objElementRect.top;
+
+            // La distance entre l'ancienne position de la souris
+            // et sa position actuelle
+            let intDistanceX = intXSouris2 - intXSouris;
+            let intDistanceY = intYSouris2 - intYSouris;
+
+            //longueur du texte 
+            let longueurText = objC2D.measureText(strTexte).width;
+            // console.log("longueur text : " + longueurText);
+
+
+            /* if ((intXTexte + intDistanceX < objCanvas.width) &&
+                 (intXTexte + intDistanceX > 0) && (intYTexte + intDistanceY < objCanvas.height) && (intYTexte + intDistanceY > 0)) {	// La nouvelle position du texte
+ 
+ 
+                 intXTexte += intDistanceX;
+                 intYTexte += intDistanceY;
+                 // Redesssiner (avec ombrage)
+                 effacerDessin();
+                 dessiner();
+                 intXSouris = intXSouris2;
+                 intYSouris = intYSouris2;
+             }*/
+
+            intXTexte += intDistanceX;
+            intYTexte += intDistanceY;
+            // Redesssiner (avec ombrage)
+            effacerDessin();
+            dessiner();
+            intXSouris = intXSouris2;
+            intYSouris = intYSouris2;
+            //   console.log("intXTexte: " + intXTexte + " " + "intYTexte: " + intYTexte)
+            // console.log(intDistanceX)
+            // effacerDessin();
+            //   dessiner();
+
+
+
+        }
+        function deposerTexte() {
+
+
+            effacerDessin();
+            dessiner();
+        }
+
+    </script>
+</head>
+
+<body onload="initDessiner()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Le glisser-déposer du drapeau de l'Angleterre par Gabriel Marrero<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="320" tabindex="1" draggable="true" ondragstart="prendreTexte()"
+            ondragover="glisserTexte()" ondrop="deposerTexte()" ondragleave="deposerTexte()">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+
+    </main>
+    <img id="imgTransparent" src="Transparent.gif" alt="Transparent" />
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+
+</html>

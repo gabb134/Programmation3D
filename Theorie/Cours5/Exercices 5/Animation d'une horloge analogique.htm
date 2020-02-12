@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="Animation horloge 2020" />
+  <title>Animation d'une horloge analogique par VotreNom</title>
+  <link rel="stylesheet" type="text/css" href="StyleLabo8.css" />  
+ 
+  <!-- Code JavaScript local -->
+  <script type="text/javascript">
+      let objCanvas = null;
+      let objC2D = null;
+	  let objCycleAnimation = null;
+      
+      const initAnimation = ()=> {
+        objCanvas = document.getElementById('monCanvas');
+	    objC2D = objCanvas.getContext('2d');
+	    dessinerHorloge(); // Dessiner une première fois
+	    animer(); 
+      }
+      
+      const animer = ()=> {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+	
+	    // Le cycle d'animation
+	    effacerDessin();
+	    mettreAJourAnimation();
+	    dessinerHorloge();
+      }
+      
+      const effacerDessin = ()=> {
+	    objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+      }
+
+      const mettreAJourAnimation = ()=>
+      {
+		// A programmer
+      }
+	
+      const arreterAnimation = ()=>
+      {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);	
+		objCycleAnimation = null
+      }
+      
+      const dessinerHorloge = ()=> {
+		objC2D.save();
+			// Copier votre dessin ici
+			
+		objC2D.restore();
+      }
+   </script>
+</head>
+
+<body onload="initAnimation()">
+
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Animation d'une horloge analogique<br />
+            </span> par 
+            <span class="sAuteurApp">
+                VotreNom
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="640">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+ 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+</html>
