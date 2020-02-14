@@ -20,7 +20,8 @@
         let compteurSecondes = 0;
         let compteurHeures = 0;
         let compteurMinutes = 0;
-        let binSon = false;
+        //let binSon = false;
+        let binPause = false;
 
         const initAnimation = () => {
             objCanvas = document.getElementById('monCanvas');
@@ -102,29 +103,41 @@
             //console.log(anneeAlarme + "-" + mois + "-" + jour + " " + heureAlarme + ":" + minuteAlarme)
             //  sonAlarme.pause();
             //   console.log(valueOf(dateAlarme))
-            console.log(dateAlarme)
-
-            if (checkboxAlarme && dateAlarme != "") {
-                // console.log("checked")
-                if (jour == jourAlarme && mois == moisAlarme && aujd.getFullYear() == anneeAlarme && heures == heureAlarme && minutes == minuteAlarme) {
+            // console.log(dateAlarme)
 
 
-                    sonAlarme.play();
+
+            sonAlarme.pause();
+
+            console.log(binPause)
+
+
+            if (checkboxAlarme && dateAlarme != "" && !binPause) {
+                //binPause = true;
+                console.log("test")
+                //alert(binPause)
+                if (!binPause) {
+                    console.log("allo")
+                    // binPause = true;
+                    if (jour == jourAlarme && mois == moisAlarme && aujd.getFullYear() == anneeAlarme && heures == heureAlarme && minutes == minuteAlarme) {
+
+
+                        sonAlarme.play();
+                    }
                 }
                 else {
-                    sonAlarme.pause();
+                    sonAlarme.onpause = pauseSon;
                 }
 
             }
-            else {
 
-                //sonAlarme.pause();
-                sonAlarme.pause();
-            }
 
 
         }
-
+        function pauseSon() {
+            // alert("pause")
+            binPause = true;
+        }
 
 
 
