@@ -81,7 +81,7 @@
             //1. on va aller chercher les heures dans les 12 chiffres du cercle et on le multipli par 360
             //2. on va chercher les minutes dans 
             //3. on le multiplie par 1/12 pour juste faire une partie du cercle
-            compteurHeures = (heures / 12 + (minutes / 60) / 12 + (5 / 3600) / 12) * 360;
+            compteurHeures = (heures / 12 + (minutes / 60) / 12 + (secondes / 3600) / 12) * 360;
 
 
 
@@ -99,32 +99,33 @@
             let minuteAlarme = reste.substr(6, 2);
 
 
-            console.log(anneeAlarme + "-" + mois + "-" + jour + " " + heureAlarme + ":" + minuteAlarme)
-            sonAlarme.pause();
+            //console.log(anneeAlarme + "-" + mois + "-" + jour + " " + heureAlarme + ":" + minuteAlarme)
+            //  sonAlarme.pause();
+            //   console.log(valueOf(dateAlarme))
+            console.log(dateAlarme)
 
-
-
-
-            if (checkboxAlarme) {
+            if (checkboxAlarme && dateAlarme != "") {
                 // console.log("checked")
-            
-              jouerSon();
+                if (jour == jourAlarme && mois == moisAlarme && aujd.getFullYear() == anneeAlarme && heures == heureAlarme && minutes == minuteAlarme) {
 
-              
+
+                    sonAlarme.play();
+                }
+                else {
+                    sonAlarme.pause();
+                }
+
             }
-         
+            else {
 
-        }
-
-        function jouerSon(){
-
-            if(binSon){
+                //sonAlarme.pause();
                 sonAlarme.pause();
-            }else{
-                sonAlarme.play();
             }
 
+
         }
+
+
 
 
         const arreterAnimation = () => {
@@ -328,7 +329,7 @@
                 <audio id="sonAlarme" controls="controls">
                     <source src="Alarme.mp3" type="audio/mpeg" />
                     Ce navigateur ne gère pas l’audio.
-                    <a onClick="jouerSon()">
+                    <!--    <a onClick="jouerSon()">-->
                 </audio>
             </td>
         </table>

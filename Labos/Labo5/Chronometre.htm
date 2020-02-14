@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Animation horloge 2020" />
+    <title>Chronomètre par Gabriel Marrero</title>
+    <link rel="stylesheet" type="text/css" href="StyleLabo5.css" />
+
+    <!-- Code JavaScript local -->
+    <script type="text/javascript" src="date.js"></script>
+    <script type="text/javascript">
+        let objCanvas = null;
+        let objC2D = null;
+        let objCycleAnimation = null;
+        let objImage = new Image();
+        let heureActuelle = "";
+        let jourActulle = "";
+        let compteurSecondes = 0;
+        let compteurHeures = 0;
+        let compteurMinutes = 0;
+        const initAnimation = () => {
+            objCanvas = document.getElementById('monCanvas');
+            objC2D = objCanvas.getContext('2d');
+
+            objImage.src = 'cross.jpg';
+            dessinerHorloge(); // Dessiner une première fois
+            animer();
+
+            //console.log(nombreJoursAnnee(2020))
+
+        
+
+        }
+
+        const animer = () => {
+            // Requête pour le prochain cycle
+            objCycleAnimation = requestAnimationFrame(animer);
+
+            // Le cycle d'animation
+            effacerDessin();
+            mettreAJourAnimation();
+            dessinerHorloge();
+        }
+
+        const effacerDessin = () => {
+            objC2D.clearRect(0, 0, objCanvas.width, objCanvas.height);
+        }
+
+        const mettreAJourAnimation = () => {
+            // A programmer
+            //le texte de la date
+            let aujd = new Date();
+
+
+            let jour = aujd.getDate() < 10 ? "0" + aujd.getDate() : aujd.getDate();
+            let mois = (aujd.getMonth() + 1) ? "0" + (aujd.getMonth() + 1) : (aujd.getMonth() + 1);
+
+            let heures = aujd.getHours() < 10 ? "0" + aujd.getHours() : aujd.getHours();
+            let minutes = aujd.getMinutes() < 10 ? "0" + aujd.getMinutes() : aujd.getMinutes();
+            let secondes = aujd.getSeconds() < 10 ? "0" + aujd.getSeconds() : aujd.getSeconds();
+            //console.log(jour)
+            jourActulle = jour + "/" + mois + "/" + aujd.getFullYear();
+            heureActuelle = heures + ":" + minutes + ":" + secondes;
+
+
+            //faire l'algorithme
+
+       //     if(secondes==20)
+       compteurSecondes = secondes/60*360;
+
+
+
+       compteurMinutes = (minutes/60 + secondes/3600 )* 360 ;
+       
+
+       //Pour les heures
+       //1. on va aller chercher les heures dans les 12 chiffres du cercle et on le multipli par 360
+       //2. on va chercher les minutes dans 
+       //3. on le multiplie par 1/12 pour juste faire une partie du cercle
+       compteurHeures = (heures/12  + (minutes/60)/12  + (5/3600)/12) * 360;
+
+        
+
+
+        }
+
+        const arreterAnimation = () => {
+            if (objCycleAnimation != null)
+                cancelAnimationFrame(objCycleAnimation);
+            objCycleAnimation = null
+        }
+
+        const dessinerHorloge = () => {
+            var intCentreX = objCanvas.width / 2;
+            var intCentreY = objCanvas.height / 2;
+            var intrayon = objCanvas.width / 2;
+            var arrChiffresRomains = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
+
+
+            objC2D.save();
+            // Copier votre dessin ici
+
+
+
+
+
+            //Trace du cercle, ansi que le decoupage
+            objC2D.arc(intCentreX, intCentreY, intrayon, 0, 2 * Math.PI, false);
+            objC2D.clip();
+
+            //objC2D.globalAlpha = 0.9;
+            //Pour l'image
+            objC2D.drawImage(objImage, 0, 0, objCanvas.width, objCanvas.height);
+            //point (0,0) qui est situé au centre du canevas.
+            objC2D.translate(intCentreX, intCentreY);
+
+
+
+            objC2D.globalAlpha = 1;
+
+
+            objC2D.font = '40px Arial';
+            objC2D.textAlign = "center";
+            objC2D.fillStyle = 'white';
+
+            //objC2D.fillText(arrChiffresRomains[0], 0,-260);
+
+            //pour les chiffres romains 
+            for (let j = 0; j < arrChiffresRomains.length; j++) {
+                objC2D.strokeStyle = 'black';
+                objC2D.fillText(arrChiffresRomains[j], 0, -260);
+
+
+                objC2D.rotate(Math.PI / 6);
+            }
+            objC2D.stroke();
+            //pour les tirets gros
+            for (let j = 0; j < 12; j++) {
+
+                objC2D.strokeStyle = 'black';
+                objC2D.font = '10px Arial';
+                objC2D.fillText("█", 0, -215);
+                objC2D.rotate(Math.PI / 6);
+
+            }
+            objC2D.stroke();
+
+
+            //pour les tirets minces(60)
+            for (let i = 0; i < 60; i++) {
+
+                objC2D.strokeStyle = 'black';
+                objC2D.fillText("|", 0, -215);
+                objC2D.rotate(2 * Math.PI / 60);
+
+            }
+            objC2D.stroke();
+
+
+
+            //*****Les degrees changes lorsquon met le prochain
+            objC2D.save();
+            //Aiguille jaune pour les heures
+            objC2D.beginPath();
+            objC2D.rotate(compteurHeures * Math.PI / 180); //300 degrees
+            objC2D.moveTo(-10, 30);       // Le crayon au point 
+            objC2D.lineTo(10, 30);      // Un segment de droite v
+            objC2D.lineTo(0, -200);     // Un segment de droite 
+            objC2D.closePath();           //  Fermer le tracé
+            objC2D.strokeStyle = 'black';
+            objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
+            objC2D.fill();
+            objC2D.stroke();
+
+            objC2D.restore();
+            objC2D.save();
+
+            //Aiguille jaune pour les minutes
+            objC2D.beginPath();
+            objC2D.rotate(compteurMinutes * Math.PI / 180); //120 degrees
+            objC2D.moveTo(-10, 30);       // Le crayon au point 
+            objC2D.lineTo(10, 30);      // Un segment de droite v
+            objC2D.lineTo(0, -290);     // Un segment de droite 
+            objC2D.closePath();           //  Fermer le tracé
+            objC2D.strokeStyle = 'black';
+            objC2D.fillStyle = 'yellow';   // Style de couleur du remplissage
+            objC2D.fill();
+            objC2D.stroke();
+            objC2D.restore();
+
+            objC2D.save();
+            //Aiguille rouge pour les secondes
+            objC2D.beginPath();
+            objC2D.rotate(compteurSecondes*Math.PI / 180); //300 degrees
+            objC2D.moveTo(-5, 30);       // Le crayon au point 
+            objC2D.lineTo(5, 30);      // Un segment de droite v
+            objC2D.lineTo(0, -230);     // Un segment de droite 
+            objC2D.closePath();           //  Fermer le tracé
+            objC2D.strokeStyle = 'black';
+            objC2D.fillStyle = 'red';   // Style de couleur du remplissage
+            objC2D.fill();
+            objC2D.restore();
+            //petit cercle au milieu
+            objC2D.beginPath();
+            objC2D.fillStyle = 'white';
+            objC2D.strokeStyle = 'black';
+            objC2D.arc(0, 0, 10, 0, 2 * Math.PI, false);
+            objC2D.fill();
+            objC2D.stroke();
+            objC2D.closePath();
+
+
+
+            //Rectangle pour la date 
+
+            objC2D.beginPath();
+            objC2D.fillRect(-140, 50, 120, 30);
+            objC2D.strokeStyle = 'black';
+            objC2D.fillStyle = 'white';
+            objC2D.lineWidth = 40;
+            objC2D.fill();
+            objC2D.stroke();
+            objC2D.closePath();
+
+
+
+            //rectangle pour l'heure
+            objC2D.beginPath();
+            objC2D.fillRect(20, 50, 120, 30);
+            objC2D.strokeStyle = 'black';
+            objC2D.fillStyle = 'white';
+            objC2D.lineWidth = 40;
+            objC2D.fill();
+            objC2D.stroke();
+            objC2D.closePath();
+
+
+
+            objC2D.beginPath();
+            objC2D.font = '25px arial bold';
+            objC2D.textAlign = "center";
+            objC2D.fillStyle = 'black';
+            objC2D.fillText(jourActulle, -80, 73);
+            objC2D.closePath();
+
+            //le texte de l'heure
+            objC2D.beginPath();
+            objC2D.font = '25px Arial bold';
+            objC2D.textAlign = "center";
+            objC2D.fillStyle = 'black';
+            objC2D.fillText(heureActuelle, 80, 73);
+            objC2D.closePath();
+
+
+            objC2D.restore();
+
+        }
+    </script>
+</head>
+
+<body onload="initAnimation()">
+
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Chronomètre<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+</body>
+
+</html>
