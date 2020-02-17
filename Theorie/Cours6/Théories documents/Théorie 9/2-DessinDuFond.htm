@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Dessin du fond</title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	let objCanvas = null;
+	let objC2D = null;
+	let objCycleAnimation = null;
+	let objImageFond = null;
+    
+    function initAnimation() {
+        objCanvas = document.getElementById('monCanvas');
+        objC2D = objCanvas.getContext('2d');
+        initImageFond();
+	    dessiner(); // Dessiner une première fois
+        animer();
+	   
+    }
+
+    // Aller chercher l'image de fond
+    function initImageFond() {
+        objImageFond = new Image();
+        objImageFond.src = 'fond.jpg';
+    }
+    
+    // Un cycle d'animation	
+    function animer() {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+
+		// Le cycle d'animation
+		effacerDessin();
+		mettreAjourAnimation();
+		dessiner();
+	}
+    
+    // Arrêter l'animation
+	function arreterAnimation() {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);
+	}
+		
+	// Pour effacer le dessin
+	function effacerDessin() {
+		objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+	}
+		
+	// Pour mettre à jour l'animation
+	function mettreAjourAnimation(){   
+	}
+			
+	// Pour dessiner
+	function dessiner() {
+	    dessinerFond();
+	}
+
+	// Pour dessiner l'image de fond
+	function dessinerFond() {
+	    objC2D.save();  // Sauvegarde le contexte
+	    objC2D.drawImage(objImageFond, 0, 0, objCanvas.width, objCanvas.height);
+	    objC2D.restore(); // Restaure le contexte
+	}
+   </script>
+</head>
+
+<body onload="initAnimation()"> 
+	<canvas id="monCanvas" width="960" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas
+</body>
+
+</html>

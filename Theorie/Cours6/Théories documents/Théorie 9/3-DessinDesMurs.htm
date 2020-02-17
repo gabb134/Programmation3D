@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Dessin des murs</title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	let objCanvas = null;
+	let objC2D = null;
+	let objCycleAnimation = null;
+	let objImageFond = null;
+	let tabObjMurs = null;
+    
+    function initAnimation() {
+        objCanvas = document.getElementById('monCanvas');
+        objC2D = objCanvas.getContext('2d');
+        initImageFond();
+        initMurs();
+	    dessiner(); // Dessiner une première fois
+        animer();
+    }
+
+    // Aller chercher l'image de fond
+    function initImageFond() {
+        objImageFond = new Image();
+        objImageFond.src = 'fond.jpg'; 
+   }
+
+    // Construire les murs
+    function initMurs() {
+        tabObjMurs = new Array();
+        let objMur = null;
+
+        // Le mur de gauche (#0)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = Math.floor(objCanvas.width / 60);
+        objMur.intYFin = objCanvas.height
+        objMur.strCouleur = 'red';
+        tabObjMurs.push(objMur);
+        //console.log(Math.floor(objCanvas.width / 60))
+        // Le mur du centre (en haut) (#1)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width;
+        objMur.intYFin = Math.floor(objCanvas.width / 60);
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+
+        // Le mur de droite (#2)
+        objMur = new Object();
+        objMur.intXDebut = objCanvas.width;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width - Math.floor(objCanvas.width / 60); 
+        objMur.intYFin = objCanvas.height;
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+    }
+
+    // Un cycle d'animation	
+    function animer() {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+
+		// Le cycle d'animation
+		effacerDessin();
+		mettreAjourAnimation();
+		dessiner();
+	}
+
+    // Arrêter l'animation
+	function arreterAnimation() {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);
+	}
+		
+	// Pour effacer le dessin
+	function effacerDessin() {
+		objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+	}
+		
+	// Pour mettre à jour l'animation
+	function mettreAjourAnimation(){   
+	}
+			
+	// Pour dessiner
+	function dessiner() {
+	    dessinerFond();
+	    dessinerMurs();
+	}
+
+	// Pour dessiner l'image de fond
+	function dessinerFond() {
+	    objC2D.save();
+	    objC2D.drawImage(objImageFond, 0, 0, objCanvas.width, objCanvas.height);
+	    objC2D.restore();
+	}
+
+	// Pour dessiner les murs
+	function dessinerMurs() {
+	    objC2D.save();
+	    objC2D.globalAlpha = 0.8; // Petite transparence
+	   
+	    for (let intNoMur = 0; intNoMur < tabObjMurs.length; intNoMur++) {
+	        const objMur = tabObjMurs[intNoMur];
+
+            // Le dégradé radial
+            const intCentreX = (objMur.intXDebut + objMur.intXFin) / 2;
+	        const intCentreY = (objMur.intYDebut + objMur.intYFin) / 2;
+	        const intRayon = (intNoMur == 1) ? Math.abs(objMur.intXFin - objMur.intXDebut) / 2 
+                                           : Math.abs(objMur.intYFin - objMur.intYDebut) / 2;
+	        const objDegrade = objC2D.createRadialGradient(intCentreX, intCentreY, 0, 
+                                                         intCentreX, intCentreY, intRayon);
+	        objDegrade.addColorStop(0, 'white');
+	        objDegrade.addColorStop(1, objMur.strCouleur);
+            objC2D.fillStyle = objDegrade;
+
+            // Le dessin du mur
+	        objC2D.beginPath();
+	        objC2D.moveTo(objMur.intXDebut, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYFin);
+	        objC2D.lineTo(objMur.intXDebut, objMur.intYFin);
+	        objC2D.closePath();
+	        objC2D.fill();
+	    }
+        objC2D.restore();
+    }
+
+   </script>
+</head>
+
+<body onload="initAnimation()"> 
+	<canvas id="monCanvas" width="960" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+	
+</body>
+
+</html>
