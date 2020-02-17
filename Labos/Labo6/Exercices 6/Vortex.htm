@@ -21,6 +21,7 @@
         let objSons = null;
         let objPointage = null;
         let objImageMur = null;
+        let objMotif = null;
 
         function initAnimation() {
             objCanvas = document.getElementById('monCanvas');
@@ -49,8 +50,9 @@
             let objMur = null;
 
             objImageMur = new Image();
-            objImageMur.src = 'Lord.jpg';
+            objImageMur.src = 'forever.jpg';
 
+            
             // Le mur de gauche (#0)
             objMur = new Object();
             //objMur.objImage = objImageMur;
@@ -73,7 +75,7 @@
 
             // Le mur de droite (#2)
             objMur = new Object();
-           // objMur.objImage = objImageMur;
+            // objMur.objImage = objImageMur;
             objMur.intXDebut = objCanvas.width;
             objMur.intYDebut = 0;
             objMur.intXFin = objCanvas.width - Math.floor(objCanvas.width / 60);
@@ -107,6 +109,7 @@
             objBalle.intVitesse = 5;
             objBalle.intDirectionDegre = Math.floor(Math.random() * 181);
             objBalle.binEnMouvement = false;
+            objBalle.binTraitVisible = false;
         }
 
         // Construire le vortex
@@ -447,6 +450,7 @@
             objC2D.globalAlpha = 0.8;
 
             // const tabImageMurs = [objImageMur.objImage];
+            objMotif= objC2D.createPattern(objImageMur, 'repeat'); 
 
 
             for (let intNoMur = 0; intNoMur < tabObjMurs.length; intNoMur++) {
@@ -457,9 +461,9 @@
                 let objDegrade = objC2D.createRadialGradient(intCentreX, intCentreY, 0, intCentreX, intCentreY, intRayon);
                 //objDegrade.addColorStop(0, 'white');
                 //objDegrade.addColorStop(1, objMur.strCouleur);
-                //objC2D.fillStyle = objDegrade;
-               
-              //  console.log(objMur.intYFin)
+                objC2D.fillStyle = objMotif;
+
+                //  console.log(objMur.intYFin)
                 objC2D.beginPath();
                 objC2D.moveTo(objMur.intXDebut, objMur.intYDebut);
                 objC2D.lineTo(objMur.intXFin, objMur.intYDebut);
@@ -467,10 +471,10 @@
                 objC2D.lineTo(objMur.intXDebut, objMur.intYFin);
                 objC2D.closePath();
                 objC2D.fill();
-           //     objC2D.stroke();
-                objC2D.globalCompositeOperation = 'source-atop' 
+                //     objC2D.stroke();
+                //objC2D.globalCompositeOperation = 'source-atop'
 
-                objC2D.drawImage(objImageMur,objMur.intXDebut,objMur.intYDebut,objMur.intXFin,objMur.intYFin);
+              //  objC2D.drawImage(objImageMur, objMur.intXDebut, objMur.intYDebut, objMur.intXFin, objMur.intYFin);
             }
             objC2D.restore();
         }
@@ -492,8 +496,23 @@
             objC2D.fillStyle = objDegrade;
             objC2D.strokeStyle = 'black';
             objC2D.beginPath();
+            objBalle.intRayon = 20;
             objC2D.arc(objBalle.fltX, objBalle.fltY, objBalle.intRayon, 0, 2 * Math.PI, false);
             objC2D.fill(); objC2D.stroke();
+
+             
+            objC2D.translate(objBalle.fltX, objBalle.fltY);
+            objC2D.beginPath();
+            objC2D.rotate((objBalle.intDirectionDegre )* Math.PI/180);
+            objC2D.moveTo(0,0)
+            objC2D.lineTo(objBalle.intRayon-10, objBalle.intRayon-10)
+            objC2D.fillStyle = 'black'
+           
+            objC2D.closePath();
+            objC2D.stroke();
+            //console.log(objBalle.intDirectionDegre)
+            console.log("x: "+objBalle.fltX+", y: "+objBalle.fltY)
+
             objC2D.restore();
         }
 
@@ -591,6 +610,16 @@
                     objBalle.binEnMouvement = true;
                     break;
             }
+            switch (event.button) {
+                case 0:
+                    console.log("allo")
+                    break;
+            }
+
+
+            //  if (binTraitVisible) { //le trait est visible
+
+            //}
 
             if (binDeplacable) {
                 objBaton.intX += objBaton.intVitesse * objBaton.intDirection;
@@ -603,7 +632,8 @@
 </head>
 
 <body onload="initAnimation()">
-    <canvas id="monCanvas" width="960" height="640" tabIndex="1" onkeydown="deplacerBaton(); return false">
+    <canvas id="monCanvas" width="960" height="640" tabIndex="1" onkeydown="deplacerBaton();  return false"
+        onclick="deplacerBaton()">
         Votre navigateur ne supporte pas la balise canvas
     </canvas>
 </body>
