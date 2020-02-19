@@ -22,6 +22,7 @@
         let objPointage = null;
         let objImageMur = null;
         let objMotif = null;
+        let objTrajetballe = null;
 
         function initAnimation() {
             objCanvas = document.getElementById('monCanvas');
@@ -34,8 +35,10 @@
             initVortex();
             initSons();
             initPointage();
+            initTrajetBalle(); //trajet de la balle
             dessiner(); // Dessiner une première fois
             animer();  // animer
+
         }
 
         // Aller chercher l'image de fond
@@ -52,7 +55,7 @@
             objImageMur = new Image();
             objImageMur.src = 'forever.jpg';
 
-            
+
             // Le mur de gauche (#0)
             objMur = new Object();
             //objMur.objImage = objImageMur;
@@ -110,6 +113,44 @@
             objBalle.intDirectionDegre = Math.floor(Math.random() * 181);
             objBalle.binEnMouvement = false;
             objBalle.binTraitVisible = false;
+            // console.log(objBalle.intDirectionDegre)
+        }
+        //Contruire le trajet de la balle
+        function initTrajetBalle() {
+
+            objTrajetballe = new Object();
+            objTrajetballe.strCouleur = "yellow";
+            objTrajetballe.tabTrajetX = [];
+            objTrajetballe.tabTrajetY = [];
+
+        }
+        function mettreAJourTrajetBalle() {
+            if (objBalle.binEnMouvement) {
+                //objTrajetballe.tabTrajet.push();
+                objTrajetballe.tabTrajetX.push(objBalle.fltX);
+                objTrajetballe.tabTrajetY.push(objBalle.fltY);
+
+            }
+            else {
+                for (let i = 0; i < objTrajetballe.tabTrajetX.length; i++) {
+                    objTrajetballe.tabTrajetX[i] = "";
+                    objTrajetballe.tabTrajetY[i] = "";
+
+                }
+            }
+
+        }
+        function dessinerTrajetBalle() {
+            // console.log(objTrajetballe.tabTrajetX[0])
+            for (let i = 0; i < objTrajetballe.tabTrajetX.length; i++) {
+                objC2D.beginPath()
+                objC2D.arc(objTrajetballe.tabTrajetX[i], objTrajetballe.tabTrajetY[i], 1, 0, 2 * Math.PI, false);
+                objC2D.strokeStyle = objTrajetballe.strCouleur;
+                objC2D.fill();
+                objC2D.stroke();
+
+            }
+
         }
 
         // Construire le vortex
@@ -202,9 +243,13 @@
             if (!objVortex.binEnDisparition) {
                 mettreAjourAnimationBalle();
                 mettreAJourAnimationVortex();
+                mettreAJourTrajetBalle();
             }
-            else
+            else {
                 mettreAJourDisparitionVortex();
+
+            }
+
         }
 
         // Pour mettre à jour l'animation du vortex
@@ -338,6 +383,7 @@
             dessinerVortexEnSpiraleAvecPlusieursBranches();
             dessinerBalle();
             dessinerPointage();
+            dessinerTrajetBalle();
         }
 
         // Pour dessiner l'image de fond
@@ -450,7 +496,7 @@
             objC2D.globalAlpha = 0.8;
 
             // const tabImageMurs = [objImageMur.objImage];
-            objMotif= objC2D.createPattern(objImageMur, 'repeat'); 
+            objMotif = objC2D.createPattern(objImageMur, 'repeat');
 
 
             for (let intNoMur = 0; intNoMur < tabObjMurs.length; intNoMur++) {
@@ -474,7 +520,7 @@
                 //     objC2D.stroke();
                 //objC2D.globalCompositeOperation = 'source-atop'
 
-              //  objC2D.drawImage(objImageMur, objMur.intXDebut, objMur.intYDebut, objMur.intXFin, objMur.intYFin);
+                //  objC2D.drawImage(objImageMur, objMur.intXDebut, objMur.intYDebut, objMur.intXFin, objMur.intYFin);
             }
             objC2D.restore();
         }
@@ -496,22 +542,29 @@
             objC2D.fillStyle = objDegrade;
             objC2D.strokeStyle = 'black';
             objC2D.beginPath();
-            objBalle.intRayon = 20;
+            //objBalle.intRayon = 25;
             objC2D.arc(objBalle.fltX, objBalle.fltY, objBalle.intRayon, 0, 2 * Math.PI, false);
             objC2D.fill(); objC2D.stroke();
 
-             
-            objC2D.translate(objBalle.fltX, objBalle.fltY);
-            objC2D.beginPath();
-            objC2D.rotate((objBalle.intDirectionDegre )* Math.PI/180);
-            objC2D.moveTo(0,0)
-            objC2D.lineTo(objBalle.intRayon-10, objBalle.intRayon-10)
-            objC2D.fillStyle = 'black'
-           
-            objC2D.closePath();
-            objC2D.stroke();
-            //console.log(objBalle.intDirectionDegre)
-            console.log("x: "+objBalle.fltX+", y: "+objBalle.fltY)
+            if (objBalle.binTraitVisible) {
+                //let correctionAngle = 225 * Math.PI / 180;
+                //on se deplace a 0,0 qui est le centre de la balle 
+                objC2D.translate(objBalle.fltX, objBalle.fltY);
+                objC2D.beginPath();
+                //on rotate en focntion de langle de rotation
+                objC2D.rotate((-objBalle.intDirectionDegre * Math.PI / 180));
+                // objC2D.rotate(-160);
+                objC2D.moveTo(0, 0)
+                objC2D.lineTo(objBalle.intRayon, 0)
+                objC2D.fillStyle = 'black'
+
+                objC2D.closePath();
+                objC2D.stroke();
+                //console.log(objBalle.intDirectionDegre)
+                // console.log("x: "+objBalle.fltX+", y: "+objBalle.fltY)
+                //  console.log(Math.floor(Math.random() * 181))
+            }
+
 
             objC2D.restore();
         }
@@ -612,7 +665,14 @@
             }
             switch (event.button) {
                 case 0:
-                    console.log("allo")
+                   
+               // binDeplacable = false;
+                    if(objBalle.binTraitVisible)
+                    objBalle.binTraitVisible = false;
+                    else
+                    objBalle.binTraitVisible = true;
+
+                    console.log("cliquer")
                     break;
             }
 
