@@ -1,0 +1,594 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Vortex par Alain Loyer et VotreNom</title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	let objCanvas = null;
+	let objC2D = null;
+	let objCycleAnimation = null;
+
+	let objImageFond = null;
+	let tabObjMurs = null;
+	let objBaton = null;
+	let objBalle = null;
+	let objVortex = null;
+	let objSons = null;
+	let objPointage = null;
+        
+    function initAnimation() {
+        objCanvas = document.getElementById('monCanvas');
+		objCanvas.focus();
+        objC2D = objCanvas.getContext('2d');
+        initImageFond();
+        initMurs();
+        initBaton();
+        initBalle();
+        initVortex();
+        initSons();
+        initPointage();
+	    dessiner(); // Dessiner une première fois
+        animer();  // animer
+    }
+
+    // Aller chercher l'image de fond
+    function initImageFond() {
+        objImageFond = new Image();
+        objImageFond.src = 'fond.jpg'; 
+    }
+
+    // Construire les murs
+    function initMurs() {
+        tabObjMurs = new Array();
+        let objMur = null;
+
+        // Le mur de gauche (#0)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = Math.floor(objCanvas.width / 60);
+        objMur.intYFin = objCanvas.height
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+
+        // Le mur du centre (en haut) (#1)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width;
+        objMur.intYFin = Math.floor(objCanvas.width / 60);
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+
+        // Le mur de droite (#2)
+        objMur = new Object();
+        objMur.intXDebut = objCanvas.width;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width - Math.floor(objCanvas.width / 60);
+        objMur.intYFin = objCanvas.height;
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+    }
+
+    // Construire le bâton
+    function initBaton() {
+        const objImageBaton = new Image();
+        objImageBaton.src = 'baton.png';
+        objBaton = new Object();
+        objBaton.objImage = objImageBaton;
+        objBaton.intLargeur = Math.floor(objCanvas.width / 10);
+        objBaton.intHauteur = Math.floor(objCanvas.height / 20);
+        objBaton.intX = (objCanvas.width - objBaton.intLargeur) / 2;
+        objBaton.intY = objCanvas.height - Math.floor(objCanvas.height / 5);
+        objBaton.intVitesse = Math.floor(objCanvas.width / 30);
+        objBaton.intDirection = 1;
+    }
+    
+      // Construire la balle
+
+    function initBalle() {
+        objBalle = new Object();
+        objBalle.intRayon = Math.floor(objCanvas.width / 150);
+        objBalle.fltX = objBaton.intX + objBaton.intLargeur / 2;
+        objBalle.fltY = objBaton.intY - objBalle.intRayon;
+        objBalle.strCouleur = 'silver';
+        objBalle.intVitesse = 5;
+        objBalle.intDirectionDegre = Math.floor(Math.random() * 181);
+        objBalle.binEnMouvement = false;
+    }
+
+    // Construire le vortex
+    function initVortex() {
+        objVortex = new Object();
+        objVortex.intRayon = objBalle.intRayon * Math.floor(3 + Math.random() * 8);
+        //objVortex.intRayon = 120;
+        objVortex.intX = tabObjMurs[0].intXFin + objVortex.intRayon + Math.floor(Math.random() * (tabObjMurs[2].intXFin - tabObjMurs[0].intXFin - 2 * objVortex.intRayon));
+        objVortex.intY = tabObjMurs[1].intYFin + objVortex.intRayon + Math.floor(Math.random() * (objBaton.intY - tabObjMurs[1].intYFin - 2 * objVortex.intRayon));
+        objVortex.strCouleur = 'pink';
+        objVortex.fltPosCouleur = 0.5;
+        objVortex.binEnDisparition = false;
+    }
+
+    // Construire les sons
+    function initSons() {
+        objSons = new Object();
+
+        let objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'SonBalleMur.mp3');
+        objSon.load();
+        objSons.balleMur = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'SonBallePerdue.mp3');
+        objSon.load();
+        objSons.ballePerdue = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'SonDisparitionVortex.mp3');
+        objSon.load();
+        objSons.disparitionVortex = objSon;
+
+        objSon = document.createElement('audio');
+        objSon.setAttribute('src', 'SonBalleBaton.mp3');
+        objSon.load();
+        objSons.balleBaton = objSon;
+    }
+
+    // Construire les cartes de pointage
+    function initPointage() {
+        objPointage = new Object();
+        objPointage.intX = tabObjMurs[0].intXFin + 4;
+        objPointage.intY = objBaton.intY + objBaton.intHauteur + 4;
+        objPointage.intLargeur = tabObjMurs[2].intXFin - objPointage.intX;
+        objPointage.intHauteur = objCanvas.height - objPointage.intY - 4;
+
+        objPointage.intNbBallesRestantes = 15;
+        objPointage.intNbBallesPerdues = 0;
+        objPointage.intNbBallesVortex = 0;
+
+        let objImage = new Image();
+        objImage.src = 'balle.jpg';
+        objPointage.objImageBalle = objImage;
+
+        objImage = new Image();
+        objImage.src = 'vortex.jpg';
+        objPointage.objImageVortex = objImage;
+
+        objImage = new Image();
+        objImage.src = 'Perdu.jpg';
+        objPointage.objImagePerdu = objImage;
+    }
+
+    // Un cycle d'animation	
+    function animer() {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+
+		// Le cycle d'animation
+		effacerDessin();
+		mettreAjourAnimation();
+		dessiner();
+	}
+
+    // Arrêter l'animation
+	function arreterAnimation() {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);
+		objCycleAnimation = null;
+	}
+		
+	// Pour effacer le dessin
+	function effacerDessin() {
+		objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+	}
+		
+	// Pour mettre à jour l'animation
+	function mettreAjourAnimation() {
+	    if (!objVortex.binEnDisparition) {
+	        mettreAjourAnimationBalle();
+	        mettreAJourAnimationVortex();
+	    }
+        else
+           mettreAJourDisparitionVortex();
+	}
+
+	// Pour mettre à jour l'animation du vortex
+	function mettreAJourAnimationVortex() {
+	    if (objVortex.fltPosCouleur > 0.99)
+	        objVortex.fltPosCouleur = 0
+	    else
+	        objVortex.fltPosCouleur += 0.01;
+
+        // Vérifier si la balle est dans le vortex
+	    if (balleEstDansLeVortex()) {
+	        objVortex.binEnDisparition = true;
+	        objSons.disparitionVortex.play(); // Le son du vortex qui disparaît
+	        initBalle();
+	    }
+	}
+
+	// Pour mettre à jour la disparition du vortex
+	function mettreAJourDisparitionVortex() {
+        objVortex.intRayon--;
+        if (objVortex.intRayon == 0) {
+            // Le décompte des balles
+            objPointage.intNbBallesRestantes--;
+            objPointage.intNbBallesVortex++;
+            if (objPointage.intNbBallesRestantes == 0)
+                // Pour que la balle ne soit plus visible
+                objBalle.fltY = objCanvas.height + objBalle.intRayon;
+            else // Création d'un nouveau vortex
+                initVortex();
+        }
+    }
+
+    // Pour mettre à jour l'animation de la balle
+    function mettreAjourAnimationBalle() {
+        if (objBalle.binEnMouvement) {
+            // Déplacer virtuellement
+            let fltDeplX = Math.cos(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            let fltDeplY = -Math.sin(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            const fltXBalle = objBalle.fltX + fltDeplX;
+            const fltYBalle = objBalle.fltY + fltDeplY;
+
+            // Vérifier les collisions
+            const binCollAvecMurVertical = (fltXBalle + objBalle.intRayon > tabObjMurs[2].intXFin) ||
+                                         (fltXBalle - objBalle.intRayon < tabObjMurs[0].intXFin);
+            const binCollAvecMurHorizontal = fltYBalle - objBalle.intRayon <= tabObjMurs[1].intYFin;
+            const binCollAvecBaton = balleEstEnCollisionAvecBaton(fltXBalle, fltYBalle);
+
+            // Appliquer le changement d'angle
+
+            if (binCollAvecMurVertical) {
+                objBalle.intDirectionDegre = 180 - objBalle.intDirectionDegre;
+                objSons.balleMur.play(); // Le son de la balle sur le mur
+            }
+            if (binCollAvecMurHorizontal) {
+                objBalle.intDirectionDegre = 360 - objBalle.intDirectionDegre;
+                objSons.balleMur.play(); // Le son de la balle sur le mur
+            }
+
+            if (binCollAvecBaton) {
+                const intAngle = 90 + Math.floor((objBalle.fltX - objBalle.intRayon - objBaton.intX) / objBaton.intLargeur * 180);
+                objBalle.intDirectionDegre -= intAngle;
+                objSons.balleBaton.play(); // Le son de la balle sur le bâton
+            }
+
+            // Pour éviter un angle négatif
+            if (objBalle.intDirectionDegre < 0)
+                objBalle.intDirectionDegre += 360;
+
+            // Pour éviter les rebonds infinis
+            if (objBalle.intDirectionDegre == 0 || objBalle.intDirectionDegre == 180)
+                objBalle.intDirectionDegre++;
+
+            // Déplacer réellement
+            fltDeplX = Math.cos(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            fltDeplY = -Math.sin(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            objBalle.fltX += fltDeplX; objBalle.fltY += fltDeplY;
+
+            // La balle est sortie du jeu
+            if (objBalle.fltY > objCanvas.height) {
+                objSons.ballePerdue.play(); // Le son de la balle perdue
+                // Le décompte des balles
+                objPointage.intNbBallesRestantes--;
+                objPointage.intNbBallesPerdues++;
+                if (objPointage.intNbBallesRestantes != 0)
+                    initBalle();
+            }
+        }
+    }
+
+	// Pour vérifier si la balle est en collision avec la bâton
+	function balleEstEnCollisionAvecBaton(fltXBalle, fltYBalle) {
+	    // Rectangle de la balle
+	    const fltGaucheBalle = fltXBalle - objBalle.intRayon;
+	    const fltDroiteBalle = fltXBalle + objBalle.intRayon;
+	    const fltHautBalle = fltYBalle - objBalle.intRayon;
+	    const fltBasBalle = fltYBalle + objBalle.intRayon;
+
+	    // Rectangle du bâton
+	    const intGaucheBaton = objBaton.intX;
+	    const intDroiteBaton = objBaton.intX + objBaton.intLargeur;
+	    const intHautBaton = objBaton.intY;
+	    const intBasBaton = objBaton.intY + objBaton.intHauteur;
+
+	    return (objBalle.intDirectionDegre > 180) && (fltBasBalle > intHautBaton) && (fltHautBalle < intBasBaton) && (fltDroiteBalle > intGaucheBaton) && (fltGaucheBalle < intDroiteBaton);
+	}
+
+	// Pour vérifier si la balle est dans la vortex
+	function balleEstDansLeVortex() {
+	    let binBalleEstDansLeVortex = true;
+	    const intRayonVortexCarre = objVortex.intRayon * objVortex.intRayon;
+	    const tabPositionXBalle = [objBalle.fltX - objVortex.intX,
+                                 objBalle.fltX + objBalle.intRayon - objVortex.intX,
+                                 objBalle.fltX - objVortex.intX,
+                                 objBalle.fltX - objBalle.intRayon - objVortex.intX];
+	    const tabPositionYBalle = [-objBalle.fltY + objBalle.intRayon + objVortex.intY,
+                                 -objBalle.fltY + objVortex.intY,
+                                 -objBalle.fltY - objBalle.intRayon + objVortex.intY,
+                                 -objBalle.fltY + objVortex.intY];
+	    for (let i = 0; i < 4; i++) {
+	        if ((tabPositionXBalle[i] * tabPositionXBalle[i]) + (tabPositionYBalle[i] * tabPositionYBalle[i]) > intRayonVortexCarre)
+	            binBalleEstDansLeVortex = false;
+	    }
+	    return binBalleEstDansLeVortex;
+	}    
+	
+    // Pour dessiner
+	function dessiner() {
+	    dessinerFond();
+	    dessinerMurs();
+	    dessinerBaton();
+	    dessinerVortexEnSpiraleAvecPlusieursBranches();
+	    dessinerBalle();
+	    dessinerPointage();
+	}
+
+	// Pour dessiner l'image de fond
+	function dessinerFond() {
+	    objC2D.save();
+	    objC2D.drawImage(objImageFond, 0, 0, objCanvas.width, objCanvas.height);
+	    objC2D.restore();
+	}
+
+	// Pour dessiner le vortex
+	function dessinerVortexEnCercle() {
+	    objC2D.save()
+
+	    const objDegrade = objC2D.createRadialGradient(objVortex.intX, objVortex.intY, 0, objVortex.intX, objVortex.intY, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.fillStyle = objDegrade;
+	    objC2D.beginPath();
+	    objC2D.arc(objVortex.intX, objVortex.intY, objVortex.intRayon, 0, 2 * Math.PI, false);
+	    objC2D.fill();
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner un vortex en forme de spirale
+	function dessinerVortexEnSpirale() {
+	    objC2D.save();
+
+	    // Déplacer le contexte au centre de la spirale
+	    objC2D.translate(objVortex.intX, objVortex.intY);
+
+	    const objDegrade = objC2D.createRadialGradient(0, 0, 0, 0, 0, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.strokeStyle = objDegrade;
+
+	    const intNbCirconvolutions = 15;
+	    const fltAugmentationRayon = objVortex.intRayon / (360 * intNbCirconvolutions);
+
+	    objC2D.beginPath();
+	    // Se déplacer au centre de la spirale
+	    objC2D.moveTo(0, 0);
+	    // Au point de départ, le rayom est nul
+	    let fltRayon = 0;
+	    // Faire le tracé de la spirale
+	    for (let intDegres = 360 * objVortex.fltPosCouleur; intDegres <= 360 * (intNbCirconvolutions + objVortex.fltPosCouleur); intDegres++) {
+	        // Convertir les degrés en radians
+	        const fltDegresRadians = intDegres * (Math.PI / 180);
+	        // Les coordonnées (fltX,fltY) à dessiner
+	        const fltX = fltRayon * Math.cos(fltDegresRadians);
+	        const fltY = fltRayon * Math.sin(fltDegresRadians);
+	        objC2D.lineTo(fltX, fltY);
+	        // Le rayon augmente progressivement
+	        fltRayon += fltAugmentationRayon;
+	    }
+	    objC2D.stroke(); // Dessiner le tracé
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner un vortex en forme de spirale avec plusieurs branches
+	function dessinerVortexEnSpiraleAvecPlusieursBranches() {
+	    objC2D.save();
+
+	    // Déplacer le contexte au centre de la spirale
+	    objC2D.translate(objVortex.intX, objVortex.intY);
+
+	    const objDegrade = objC2D.createRadialGradient(0, 0, 0, 0, 0, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.strokeStyle = objDegrade;
+
+	    const intNbBranches = 4;
+	    for (let intNoBranche = 0; intNoBranche < intNbBranches; intNoBranche++) {
+
+	        const intNbCirconvolutions = 4;
+	        const fltAugmentationRayon = objVortex.intRayon / (360 * intNbCirconvolutions);
+
+	        objC2D.beginPath();
+	        // Se déplacer au centre de la spirale
+	        objC2D.moveTo(0, 0);
+	        // Au point de départ, le rayom est nul
+	        let fltRayon = 0;
+	        // Faire le tracé de la spirale
+	        for (let intDegres = 360 * objVortex.fltPosCouleur; intDegres <= 360 * (intNbCirconvolutions + objVortex.fltPosCouleur); intDegres++) {
+	            // Convertir les degrés en radians
+	            const fltDegresRadians = intDegres * (Math.PI / 180);
+	            // Les coordonnées (fltX,fltY) à dessiner
+	            const fltX = fltRayon * Math.cos(fltDegresRadians);
+	            const fltY = fltRayon * Math.sin(fltDegresRadians);
+	            objC2D.lineTo(fltX, fltY);
+	            // Le rayon augmente progressivement
+	            fltRayon += fltAugmentationRayon;
+	        }
+	        objC2D.stroke(); // Dessiner le tracé
+
+	        // Tourner le contexte
+	        objC2D.rotate(Math.PI * 2 / intNbBranches);
+	    }
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner les murs
+	function dessinerMurs() {
+	    objC2D.save();
+	    objC2D.globalAlpha = 0.8;
+
+	    for (let intNoMur = 0; intNoMur < tabObjMurs.length; intNoMur++) {
+	        const objMur = tabObjMurs[intNoMur];
+	        const intCentreX = (objMur.intXDebut + objMur.intXFin) / 2;
+	        const intCentreY = (objMur.intYDebut + objMur.intYFin) / 2;
+	        const intRayon = (intNoMur == 1) ? Math.abs(objMur.intXFin - objMur.intXDebut) / 2 : Math.abs(objMur.intYFin - objMur.intYDebut) / 2;
+	        const objDegrade = objC2D.createRadialGradient(intCentreX, intCentreY, 0, intCentreX, intCentreY, intRayon);
+	        objDegrade.addColorStop(0, 'white');
+	        objDegrade.addColorStop(1, objMur.strCouleur);
+	        objC2D.fillStyle = objDegrade;
+	        objC2D.beginPath();
+	        objC2D.moveTo(objMur.intXDebut, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYFin);
+	        objC2D.lineTo(objMur.intXDebut, objMur.intYFin);
+	        objC2D.closePath();
+	        objC2D.fill();
+	    }
+	    objC2D.restore();
+	}
+
+    // Pour dessiner le bâton
+    function dessinerBaton() {
+        objC2D.save();
+        objC2D.drawImage(objBaton.objImage, objBaton.intX, objBaton.intY, objBaton.intLargeur, objBaton.intHauteur);
+        objC2D.restore();
+    }
+
+      // Pour dessiner la balle
+
+    function dessinerBalle() {
+        objC2D.save();
+        const objDegrade = objC2D.createRadialGradient(objBalle.fltX, objBalle.fltY, 0, objBalle.fltX, objBalle.fltY, objBalle.intRayon);
+        objDegrade.addColorStop(0, 'white');
+        objDegrade.addColorStop(1, objBalle.strCouleur);
+        objC2D.fillStyle = objDegrade;
+        objC2D.strokeStyle = 'black';
+        objC2D.beginPath();
+        objC2D.arc(objBalle.fltX, objBalle.fltY, objBalle.intRayon, 0, 2 * Math.PI, false);
+        objC2D.fill(); objC2D.stroke();
+        objC2D.restore();
+    }
+
+    // Pour dessiner le pointage
+    function dessinerPointage() {
+        objC2D.save();
+            // La couleur de chaque carte de pointage
+            const tabCouleurs = ['gray', 'green', 'red'];
+            // L'image de chaque carte de pointage
+            const tabImages = [objPointage.objImageBalle, objPointage.objImageVortex, objPointage.objImagePerdu];
+            // Le nombre de balles sur chaque carte de pointage
+            const tabNbBalles = [objPointage.intNbBallesRestantes, objPointage.intNbBallesVortex, objPointage.intNbBallesPerdues];
+
+            // Pour conserver la position de la balle 
+            const fltXBalle = objBalle.fltX; const fltYBalle = objBalle.fltY;
+
+            // Dessiner chacune des cartes de pointage
+            for (let i = 0; i < 3; i++) {
+                // Dessiner le rectangle de la carte de pointage (en transparence) 
+                objC2D.globalAlpha = 0.5;
+                objC2D.fillStyle = tabCouleurs[i];
+                const intLargeur = Math.floor(objPointage.intLargeur / 3);
+                objC2D.fillRect(objPointage.intX + i * intLargeur, objPointage.intY, intLargeur - 4, objPointage.intHauteur);
+                // Dessiner l'image (en transparence)
+                objC2D.drawImage(tabImages[i], objPointage.intX + i * intLargeur, objPointage.intY, (intLargeur - 4) / 3, objPointage.intHauteur);
+                // Dessiner les balles (opaque)
+                objC2D.globalAlpha = 1;
+                const intNbBallesParColonne = 3; const intNbBallesParLigne = 5;
+                let intNbBallesDessinees = tabNbBalles[i];
+
+                const fltEspacementHorizontal = 2 * (intLargeur - 4) / 3 / (intNbBallesParLigne + 1);
+                const fltEspacementVertical = objPointage.intHauteur / (intNbBallesParColonne + 1);
+                for (let intNoLigne = 1; intNoLigne <= intNbBallesParColonne; intNoLigne++)
+                    for (let intNoColonne = 1; intNoColonne <= intNbBallesParLigne; intNoColonne++) {
+                        if (intNbBallesDessinees != 0) {
+                            objBalle.fltX = objPointage.intX + i * intLargeur + (intLargeur - 4) / 3 + fltEspacementHorizontal * intNoColonne;
+                            objBalle.fltY = objPointage.intY + fltEspacementVertical * intNoLigne;
+                            dessinerBalle();
+                            intNbBallesDessinees--;
+                        }
+                    }
+                }
+            
+                // Pour remettre en place la position de la balle
+                objBalle.fltX = fltXBalle; objBalle.fltY = fltYBalle;
+
+                // La fin du jeu
+                if (objPointage.intNbBallesRestantes == 0) {
+                    ecrireMessageFin(); 
+                    arreterAnimation();
+                }
+
+        objC2D.restore();
+    }
+
+    // Pour écrire le message à la fin du jeu 
+    function ecrireMessageFin() {
+        objC2D.lineWidth = 1;
+        objC2D.strokeStyle = 'black';
+        objC2D.font = '50px Arial';
+        objC2D.textAlign = 'center';
+        objC2D.textBaseline = 'middle';
+
+        if (objPointage.intNbBallesVortex > objPointage.intNbBallesPerdues) {
+            objC2D.fillStyle = 'green';
+            strTexte = 'Vous avez détruit ' + objPointage.intNbBallesVortex + ' vortex. Bravo!!!'
+        }
+        else {
+            objC2D.fillStyle = 'red';
+            strTexte = 'Vous avez perdu ' + objPointage.intNbBallesPerdues + ' balle(s)!!!'
+        }
+
+        objC2D.fillText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
+        objC2D.strokeText(strTexte, objCanvas.width / 2, objCanvas.height / 2);
+    }
+
+    // Pour déplacer le bâton
+    function deplacerBaton() {
+        let binDeplacable = false;
+        let objMur = null
+        switch (event.keyCode) {
+            case 39: // Flèche-à-droite
+                // Déplacer à droite si le bâton n'entre pas en collision avec le mur droite
+                objMur = tabObjMurs[2];
+                binDeplacable = (objBaton.intX + objBaton.intLargeur + objBaton.intVitesse) <= objMur.intXFin;
+                objBaton.intDirection = 1;
+                break;
+            case 37: // Flèche-à-gauche
+                // Déplacer à gauche si le bâton n'entre pas en collision avec le mur gauche
+                objMur = tabObjMurs[0];
+                binDeplacable = (objBaton.intX - objBaton.intVitesse) >= objMur.intXFin;
+                objBaton.intDirection = -1;
+                break;
+            case 38: // Flèche-en-haut
+                objBalle.binEnMouvement = true;
+                break;
+        }
+
+        if (binDeplacable) {
+            objBaton.intX += objBaton.intVitesse * objBaton.intDirection;
+            if (!objBalle.binEnMouvement)
+                objBalle.fltX += objBaton.intVitesse * objBaton.intDirection;
+        }
+    }
+
+   </script>
+</head>
+
+<body onload="initAnimation()"> 
+	<canvas id="monCanvas" width="960" height="640" tabIndex="1" onkeydown="deplacerBaton(); return false">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+
+</html>

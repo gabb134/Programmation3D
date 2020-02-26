@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Squelette du jeu</title>
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	let objCanvas = null;
+	let objC2D = null;
+	let objCycleAnimation = null;
+    
+    function initAnimation() {
+        objCanvas = document.getElementById('monCanvas');
+		objC2D = objCanvas.getContext('2d');
+		dessiner(); // Dessiner une première fois
+		animer();
+    }
+
+    // Un cycle d'animation	
+    function animer() {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+
+		// Le cycle d'animation
+		effacerDessin();
+		mettreAjourAnimation();
+		dessiner();
+	}
+
+    // Arrêter l'animation
+	function arreterAnimation() {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);
+		objCycleAnimation = null;
+	}
+		
+	// Pour effacer le dessin
+	function effacerDessin() {
+		objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+	}
+		
+	// Pour mettre à jour l'animation
+	function mettreAjourAnimation(){   
+	}
+			
+	// Pour dessiner
+	function dessiner() {
+	}
+
+   </script>
+</head>
+
+<body onload="initAnimation()"> 
+	<canvas id="monCanvas" width="960" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+
+</html>

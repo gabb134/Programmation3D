@@ -1,0 +1,442 @@
+﻿
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>La balle dans le vortex </title>
+  <link rel="stylesheet" type="text/css" href="" />
+  <!-- Code JavaScript local -->
+  <script type="text/javascript"> 
+	var objCanvas = null;
+	var objC2D = null;
+	var objCycleAnimation = null;
+	var objImageFond = null;
+	var tabObjMurs = null;
+	var objBaton = null;
+	var objBalle = null;
+	var objVortex = null;
+        
+    function initAnimation() {
+        objCanvas = document.getElementById('monCanvas');
+		objCanvas.focus();
+        objC2D = objCanvas.getContext('2d');
+        initImageFond();
+        initMurs();
+        initBaton();
+        initBalle();
+        initVortex();
+	    dessiner(); // Dessiner une première fois
+        animer();  // animer
+    }
+
+    // Aller chercher l'image de fond
+    function initImageFond() {
+        objImageFond = new Image();
+        objImageFond.src = 'fond.jpg'; 
+    }
+
+    // Construire les murs
+    function initMurs() {
+        tabObjMurs = new Array();
+        var objMur = null;
+
+        // Le mur de gauche (#0)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = Math.floor(objCanvas.width / 60);
+        objMur.intYFin = objCanvas.height
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+
+        // Le mur du centre (en haut) (#1)
+        objMur = new Object();
+        objMur.intXDebut = 0;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width;
+        objMur.intYFin = Math.floor(objCanvas.width / 60);
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+
+        // Le mur de droite (#2)
+        objMur = new Object();
+        objMur.intXDebut = objCanvas.width;
+        objMur.intYDebut = 0;
+        objMur.intXFin = objCanvas.width - Math.floor(objCanvas.width / 60);
+        objMur.intYFin = objCanvas.height;
+        objMur.strCouleur = 'midnightblue';
+        tabObjMurs.push(objMur);
+    }
+
+    // Construire le bâton
+    function initBaton() {
+        var objImageBaton = new Image();
+        objImageBaton.src = 'baton.png';
+        objBaton = new Object();
+        objBaton.objImage = objImageBaton;
+        objBaton.intLargeur = Math.floor(objCanvas.width / 10);
+        objBaton.intHauteur = Math.floor(objCanvas.height / 20);
+        objBaton.intX = (objCanvas.width - objBaton.intLargeur) / 2;
+        objBaton.intY = objCanvas.height - Math.floor(objCanvas.height / 5);
+        objBaton.intVitesse = Math.floor(objCanvas.width / 30);
+        objBaton.intDirection = 1;
+    }
+    
+    // Construire la balle
+    function initBalle() {
+        objBalle = new Object();
+        objBalle.intRayon = Math.floor(objCanvas.width / 150);
+        objBalle.fltX = objBaton.intX + objBaton.intLargeur / 2;
+        objBalle.fltY = objBaton.intY - objBalle.intRayon;
+        objBalle.strCouleur = 'silver';
+        objBalle.intVitesse = 5;
+        objBalle.intDirectionDegre = Math.floor(Math.random() * 181); 
+        objBalle.binEnMouvement = false;
+    }
+
+    // Construire le vortex
+    function initVortex() {
+        objVortex = new Object();
+        objVortex.intRayon = objBalle.intRayon * Math.floor(3 + Math.random() * 8);
+        //objVortex.intRayon = 120;
+        objVortex.intX = tabObjMurs[0].intXFin + objVortex.intRayon + Math.floor(Math.random() * (tabObjMurs[2].intXFin - tabObjMurs[0].intXFin - 2 * objVortex.intRayon));
+        objVortex.intY = tabObjMurs[1].intYFin + objVortex.intRayon + Math.floor(Math.random() * (objBaton.intY - tabObjMurs[1].intYFin - 2 * objVortex.intRayon));
+        objVortex.strCouleur = 'pink';
+        objVortex.fltPosCouleur = 0.5;
+        objVortex.binEnDisparition = false;
+    }
+
+    // Un cycle d'animation	
+    function animer() {
+        // Requête pour le prochain cycle
+        objCycleAnimation = requestAnimationFrame(animer);
+
+		// Le cycle d'animation
+		effacerDessin();
+		mettreAjourAnimation();
+		dessiner();
+	}
+
+    // Arrêter l'animation
+	function arreterAnimation() {
+	    if (objCycleAnimation != null)
+	        cancelAnimationFrame(objCycleAnimation);
+	}
+		
+	// Pour effacer le dessin
+	function effacerDessin() {
+		objC2D.clearRect(0,0, objCanvas.width, objCanvas.height); 
+	}
+		
+	// Pour mettre à jour l'animation
+	function mettreAjourAnimation() {
+	    if (!objVortex.binEnDisparition) {
+	        mettreAjourAnimationBalle();
+	        mettreAJourAnimationVortex();
+	    }
+        else
+           mettreAJourDisparitionVortex();
+	}
+
+	// Pour mettre à jour l'animation du vortex
+	function mettreAJourAnimationVortex() {
+	    if (objVortex.fltPosCouleur > 0.99)
+	        objVortex.fltPosCouleur = 0
+	    else
+	        objVortex.fltPosCouleur += 0.01;
+
+        // Vérifier si la balle est dans le vortex 
+	    if (balleEstDansLeVortex()) {
+	        objVortex.binEnDisparition = true;
+	        initBalle();
+	    }
+	}
+
+	// Pour mettre à jour la disparition du vortex
+	function mettreAJourDisparitionVortex() {
+        objVortex.intRayon--;
+        if (objVortex.intRayon == 0)
+            initVortex();
+    }
+
+    // Pour mettre à jour l'animation de la balle
+    function mettreAjourAnimationBalle() {
+        if (objBalle.binEnMouvement) {
+            // Déplacer virtuellement
+            var fltDeplX = Math.cos(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            var fltDeplY = -Math.sin(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            var fltXBalle = objBalle.fltX + fltDeplX;
+            var fltYBalle = objBalle.fltY + fltDeplY;
+
+            // Vérifier les collisions
+            var binCollAvecMurVertical = (fltXBalle + objBalle.intRayon > tabObjMurs[2].intXFin) ||
+                                         (fltXBalle - objBalle.intRayon < tabObjMurs[0].intXFin);
+            var binCollAvecMurHorizontal = fltYBalle - objBalle.intRayon <= tabObjMurs[1].intYFin;
+            var binCollAvecBaton = balleEstEnCollisionAvecBaton(fltXBalle, fltYBalle);
+
+            // Appliquer le changement d'angle
+            if (binCollAvecMurVertical)
+                objBalle.intDirectionDegre = 180 - objBalle.intDirectionDegre;
+            if (binCollAvecMurHorizontal)
+                objBalle.intDirectionDegre = 360 - objBalle.intDirectionDegre;
+
+            if (binCollAvecBaton) {
+                var intAngle = 90 + Math.floor((objBalle.fltX - objBalle.intRayon - objBaton.intX) / objBaton.intLargeur * 180);
+                objBalle.intDirectionDegre -= intAngle;
+            }
+
+            // Pour éviter un angle négatif
+            if (objBalle.intDirectionDegre < 0)
+                objBalle.intDirectionDegre += 360;
+
+            // Pour éviter les rebonds infinis
+            if (objBalle.intDirectionDegre == 0 || objBalle.intDirectionDegre == 180)
+                objBalle.intDirectionDegre++;
+
+            // Déplacer réellement
+            fltDeplX = Math.cos(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            fltDeplY = -Math.sin(objBalle.intDirectionDegre * Math.PI / 180) * objBalle.intVitesse;
+            objBalle.fltX += fltDeplX; objBalle.fltY += fltDeplY;
+
+            // La balle est sortie du jeu
+            if (objBalle.fltY > objCanvas.height)
+                initBalle();
+        }
+    }
+
+	// Pour vérifier si la balle est en collision avec la bâton
+	function balleEstEnCollisionAvecBaton(fltXBalle, fltYBalle) {
+	    // Rectangle de la balle
+	    var fltGaucheBalle = fltXBalle - objBalle.intRayon;
+	    var fltDroiteBalle = fltXBalle + objBalle.intRayon;
+	    var fltHautBalle = fltYBalle - objBalle.intRayon;
+	    var fltBasBalle = fltYBalle + objBalle.intRayon;
+
+	    // Rectangle du bâton
+	    var intGaucheBaton = objBaton.intX;
+	    var intDroiteBaton = objBaton.intX + objBaton.intLargeur;
+	    var intHautBaton = objBaton.intY;
+	    var intBasBaton = objBaton.intY + objBaton.intHauteur;
+
+	    return (objBalle.intDirectionDegre > 180) && (fltBasBalle > intHautBaton) && (fltHautBalle < intBasBaton) && (fltDroiteBalle > intGaucheBaton) && (fltGaucheBalle < intDroiteBaton);
+	}
+	
+   // Pour vérifier si la balle est dans la vortex
+	function balleEstDansLeVortex() {
+        var binBalleEstDansLeVortex = true;
+        var intRayonVortexCarre = objVortex.intRayon * objVortex.intRayon;
+        var tabPositionXBalle = [objBalle.fltX - objVortex.intX, 
+                                 objBalle.fltX + objBalle.intRayon - objVortex.intX, 
+                                 objBalle.fltX - objVortex.intX, 
+                                 objBalle.fltX - objBalle.intRayon - objVortex.intX];
+        var tabPositionYBalle = [-objBalle.fltY + objBalle.intRayon + objVortex.intY, 
+                                 -objBalle.fltY + objVortex.intY, 
+                                 -objBalle.fltY - objBalle.intRayon + objVortex.intY, 
+                                 -objBalle.fltY + objVortex.intY];
+	    for (var i = 0; i < 4; i++) {
+	        if ((tabPositionXBalle[i] * tabPositionXBalle[i]) + (tabPositionYBalle[i] * tabPositionYBalle[i]) > intRayonVortexCarre)
+	            binBalleEstDansLeVortex = false;
+	    }
+	    return binBalleEstDansLeVortex;
+	 }
+     
+	// Pour dessiner
+	function dessiner() {
+	    dessinerFond();
+	    dessinerMurs();
+	    dessinerBaton();
+	    dessinerVortexEnSpiraleAvecPlusieursBranches();
+	    dessinerBalle();
+	}
+
+	// Pour dessiner l'image de fond
+	function dessinerFond() {
+	    objC2D.save();
+	    objC2D.drawImage(objImageFond, 0, 0, objCanvas.width, objCanvas.height);
+	    objC2D.restore();
+	}
+
+	// Pour dessiner le vortex
+	function dessinerVortexEnCercle() {
+	    objC2D.save()
+
+	    var objDegrade = objC2D.createRadialGradient(objVortex.intX, objVortex.intY, 0, objVortex.intX, objVortex.intY, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.fillStyle = objDegrade;
+	    objC2D.beginPath();
+	    objC2D.arc(objVortex.intX, objVortex.intY, objVortex.intRayon, 0, 2 * Math.PI, false);
+	    objC2D.fill();
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner un vortex en forme de spirale
+	function dessinerVortexEnSpirale() {
+	    objC2D.save();
+
+	    // Déplacer le contexte au centre de la spirale
+	    objC2D.translate(objVortex.intX, objVortex.intY);
+
+	    var objDegrade = objC2D.createRadialGradient(0, 0, 0, 0, 0, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.strokeStyle = objDegrade;
+
+	    var intNbCirconvolutions = 15;
+	    var fltAugmentationRayon = objVortex.intRayon / (360 * intNbCirconvolutions);
+
+	    objC2D.beginPath();
+	    // Se déplacer au centre de la spirale
+	    objC2D.moveTo(0, 0);
+	    // Au point de départ, le rayom est nul
+	    var fltRayon = 0;
+	    // Faire le tracé de la spirale
+	    for (var intDegres = 360 * objVortex.fltPosCouleur; intDegres <= 360 * (intNbCirconvolutions + objVortex.fltPosCouleur); intDegres++) {
+	        // Convertir les degrés en radians
+	        var fltDegresRadians = intDegres * (Math.PI / 180);
+	        // Les coordonnées (fltX,fltY) à dessiner
+	        var fltX = fltRayon * Math.cos(fltDegresRadians);
+	        var fltY = fltRayon * Math.sin(fltDegresRadians);
+	        objC2D.lineTo(fltX, fltY);
+	        // Le rayon augmente progressivement
+	        fltRayon += fltAugmentationRayon;
+	    }
+	    objC2D.stroke(); // Dessiner le tracé
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner un vortex en forme de spirale avec plusieurs branches
+	function dessinerVortexEnSpiraleAvecPlusieursBranches() {
+	    objC2D.save();
+
+	    // Déplacer le contexte au centre de la spirale
+	    objC2D.translate(objVortex.intX, objVortex.intY);
+
+	    var objDegrade = objC2D.createRadialGradient(0, 0, 0, 0, 0, objVortex.intRayon);
+	    objDegrade.addColorStop(0, 'black');
+	    objDegrade.addColorStop(1, 'black');
+	    objDegrade.addColorStop(objVortex.fltPosCouleur, objVortex.strCouleur);
+	    objC2D.strokeStyle = objDegrade;
+
+	    var intNbBranches = 4;
+	    for (var intNoBranche = 0; intNoBranche < intNbBranches; intNoBranche++) {
+
+	        var intNbCirconvolutions = 4;
+	        var fltAugmentationRayon = objVortex.intRayon / (360 * intNbCirconvolutions);
+
+	        objC2D.beginPath();
+	        // Se déplacer au centre de la spirale
+	        objC2D.moveTo(0, 0);
+	        // Au point de départ, le rayom est nul
+	        var fltRayon = 0;
+	        // Faire le tracé de la spirale
+	        for (var intDegres = 360 * objVortex.fltPosCouleur; intDegres <= 360 * (intNbCirconvolutions + objVortex.fltPosCouleur); intDegres++) {
+	            // Convertir les degrés en radians
+	            var fltDegresRadians = intDegres * (Math.PI / 180);
+	            // Les coordonnées (fltX,fltY) à dessiner
+	            var fltX = fltRayon * Math.cos(fltDegresRadians);
+	            var fltY = fltRayon * Math.sin(fltDegresRadians);
+	            objC2D.lineTo(fltX, fltY);
+	            // Le rayon augmente progressivement
+	            fltRayon += fltAugmentationRayon;
+	        }
+	        objC2D.stroke(); // Dessiner le tracé
+
+	        // Tourner le contexte
+	        objC2D.rotate(Math.PI * 2 / intNbBranches);
+	    }
+
+	    objC2D.restore();
+	}
+
+	// Pour dessiner les murs
+	function dessinerMurs() {
+	    objC2D.save();
+	    objC2D.globalAlpha = 0.8;
+
+	    for (var intNoMur = 0; intNoMur < tabObjMurs.length; intNoMur++) {
+	        var objMur = tabObjMurs[intNoMur];
+	        var intCentreX = (objMur.intXDebut + objMur.intXFin) / 2;
+	        var intCentreY = (objMur.intYDebut + objMur.intYFin) / 2;
+	        var intRayon = (intNoMur == 1) ? Math.abs(objMur.intXFin - objMur.intXDebut) / 2 : Math.abs(objMur.intYFin - objMur.intYDebut) / 2;
+	        var objDegrade = objC2D.createRadialGradient(intCentreX, intCentreY, 0, intCentreX, intCentreY, intRayon);
+	        objDegrade.addColorStop(0, 'white');
+	        objDegrade.addColorStop(1, objMur.strCouleur);
+	        objC2D.fillStyle = objDegrade;
+	        objC2D.beginPath();
+	        objC2D.moveTo(objMur.intXDebut, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYDebut);
+	        objC2D.lineTo(objMur.intXFin, objMur.intYFin);
+	        objC2D.lineTo(objMur.intXDebut, objMur.intYFin);
+	        objC2D.closePath();
+	        objC2D.fill();
+	    }
+	    objC2D.restore();
+	}
+
+    // Pour dessiner le bâton
+    function dessinerBaton() {
+        objC2D.save();
+        objC2D.drawImage(objBaton.objImage, objBaton.intX, objBaton.intY, objBaton.intLargeur, objBaton.intHauteur);
+        objC2D.restore();
+    }
+
+    // Pour dessiner la balle
+    function dessinerBalle() {
+        objC2D.save();
+        var objDegrade = objC2D.createRadialGradient(objBalle.fltX, objBalle.fltY, 0, objBalle.fltX, objBalle.fltY, objBalle.intRayon);
+        objDegrade.addColorStop(0, 'white');
+        objDegrade.addColorStop(1, objBalle.strCouleur);
+        objC2D.fillStyle = objDegrade;
+        objC2D.strokeStyle = 'black';
+        objC2D.beginPath();
+        objC2D.arc(objBalle.fltX, objBalle.fltY, objBalle.intRayon, 0, 2 * Math.PI, false);
+        objC2D.fill(); objC2D.stroke();
+        objC2D.restore();
+    }
+
+    // Pour déplacer le bâton
+    function deplacerBaton() {
+        var binDeplacable = false;
+        switch (event.keyCode) {
+            case 39: // Flèche-à-droite
+                // Déplacer à droite si le bâton n'entre pas en collision avec le mur droite
+                var objMur = tabObjMurs[2];
+                binDeplacable = (objBaton.intX + objBaton.intLargeur + objBaton.intVitesse) <= objMur.intXFin;
+                objBaton.intDirection = 1;
+                break;
+            case 37: // Flèche-à-gauche
+                // Déplacer à gauche si le bâton n'entre pas en collision avec le mur gauche
+                var objMur = tabObjMurs[0];
+                binDeplacable = (objBaton.intX - objBaton.intVitesse) >= objMur.intXFin;
+                objBaton.intDirection = -1;
+                break;
+            case 38: // Flèche-en-haut
+                objBalle.binEnMouvement = true;
+                break;
+        }
+
+        if (binDeplacable) {
+            objBaton.intX += objBaton.intVitesse * objBaton.intDirection;
+            if (!objBalle.binEnMouvement)
+                objBalle.fltX += objBaton.intVitesse * objBaton.intDirection;
+        }
+    }
+
+   </script>
+</head>
+
+<body onload="initAnimation()"> 
+	<canvas id="monCanvas" width="960" height="640" tabIndex="1" onkeydown="deplacerBaton(); return false">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+
+</html>
