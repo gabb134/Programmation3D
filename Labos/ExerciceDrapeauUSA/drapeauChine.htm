@@ -4,7 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Drapeau des États-Unis par Gabriel Marrero</title>
+    <title>Drapeau de la Chine par Gabriel Marrero</title>
     <link rel="stylesheet" type="text/css" href="StyleLabo5.css" />
 
 
@@ -20,7 +20,7 @@
 
             // Dessiner le drapeau de USA 
             objC2D.beginPath();
-            objC2D.fillStyle = 'red';
+            objC2D.fillStyle = '#DE2810';
             objC2D.fillRect(0, 0, objCanvas.width, objCanvas.height);
 
 
@@ -87,29 +87,36 @@
  
              }*/
          
-            creerEtoile(80, 100, 25, 60, 5, "#FBE622", null, 0);
+            creerEtoile(80, 100, 23, 60, 5, "#FBE622", null, 0);
 
-            objC2D.restore();
-            creerEtoile(170, 40, 10, 25, 5, "#FBE622", null, 0);
+           // objC2D.restore();
+            creerEtoile(200, -25, 7, 20, 5, "#FBE622", null,20);
 
             //objC2D.restore();
 
-            creerEtoile(40, 60, 10, 25, 5, "#FBE622", null, 0);
+            creerEtoile(185, 155, 7, 20, 5, "#FBE622", null, -20);
             
-            creerEtoile(0, 60, 10, 25, 5, "#FBE622", null, 0);
+            creerEtoile(225, 135, 7, 20, 5, "#FBE622", null, 00);
 
-            creerEtoile(-40, 50, 10, 25, 5, "#FBE622", null, 0);
+            creerEtoile(235, 105, 7, 20, 5, "#FBE622", null, 20);
 
             //objC2D.rotate(60*Math.PI/180);
 
-            function creerEtoile(coorCentreX, coorCentreY, rayonCercleInterne, rayonCercleExterne, intnbSommetEterne, strFillColor, strStrokeColor) {
+            function creerEtoile(coorCentreX, coorCentreY, rayonCercleInterne, rayonCercleExterne, intnbSommetEterne, strFillColor, strStrokeColor,fltRotation) {
+               objC2D.save();
 
+             
+              
                 const fltDegrees = Math.PI / 180;
                 let fltStep = fltDegrees * (360 / intnbSommetEterne) / 2;
                 let fltCurrentStep = 0;
 
                 objC2D.beginPath();
-              
+              //  objC2D.rotate(fltStep*fltRotation);
+
+              objC2D.rotate(fltDegrees*fltRotation);
+
+              console.log(fltRotation)
 
                 objC2D.translate(coorCentreX, coorCentreY);
                 for (let i = 0; i < intnbSommetEterne; i++) {
@@ -118,10 +125,11 @@
 
                     fltCurrentStep += fltStep;
                     objC2D.lineTo(Math.sin(fltCurrentStep) * rayonCercleInterne, Math.cos(fltCurrentStep) * rayonCercleInterne);
-
+                   // 
                 }
-
+            
                 objC2D.closePath();
+              
 
                 if (strFillColor) {
                     objC2D.fillStyle = strFillColor;
@@ -132,6 +140,8 @@
                     objC2D.strokeStyle = strStrokeColor;
                     objC2D.stroke();
                 }
+       
+                objC2D.restore();
 
             }
          
@@ -229,7 +239,7 @@
     <header class="sTexteCentre sLargeurDiv sEntete">
         <p>
             <span class="sTitreApp">
-                Drapeau des États-Unis<br />
+                Drapeau de la Chine<br />
             </span> par
             <span class="sAuteurApp">
                 Gabriel Marrero
