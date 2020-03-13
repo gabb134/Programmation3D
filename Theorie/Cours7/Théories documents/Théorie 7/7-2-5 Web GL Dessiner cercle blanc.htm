@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>10-2-5 Dessiner cercle</title>
+
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderBlanc.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+  <script type="text/javascript">
+
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+      const objProgShaders = initShaders(objgl);
+      const objCercle = creerCercle(objgl);
+      effacerCanevas(objgl);
+      dessiner(objgl, objProgShaders, objCercle);
+    }
+
+    function dessiner(objgl, objProgShaders, objCercle) {
+      // La vue
+      objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+      // Matrice de projection
+      let matProjection = mat4.create();
+      mat4.ortho(-2, 2, -2, 2, -5, 5, matProjection);
+      // Relier la matrice aux shaders
+      objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+      // Matrice du modèle
+      let matModeleVue = mat4.create();
+      mat4.identity(matModeleVue);
+      // Relier la matrice aux shaders
+      objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+      // Relier les vertex aux shaders
+      objgl.bindBuffer(objgl.ARRAY_BUFFER, objCercle);
+      objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+      // Dessiner le cercle
+      let intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+      objgl.drawArrays(objCercle.typeDessin, 0, intNbVertex);
+    }
+
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function creerCercle(objgl) {
+      let objCercle = objgl.createBuffer();
+      let tabVertex = [];
+      for (let i = 0; i < 360; i++) {
+        tabVertex = tabVertex.concat([Math.cos(i * Math.PI / 180), Math.sin(i * Math.PI / 180), 0.0]);
+      }
+      objgl.bindBuffer(objgl.ARRAY_BUFFER, objCercle);
+      objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+      // Rejoindre par des droites
+      objCercle.typeDessin = objgl.LINE_LOOP;
+
+      return objCercle;
+    }
+
+  </script>
+</head>
+
+<body onload="demarrer()">
+  <canvas id="monCanvas" width="640" height="640">
+    Votre navigateur ne supporte pas la balise canvas
+  </canvas>
+</body>
+
+</html>

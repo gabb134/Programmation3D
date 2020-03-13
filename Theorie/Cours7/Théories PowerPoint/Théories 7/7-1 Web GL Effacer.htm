@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>10-1 Effacer le canevas</title>
+  
+ <script type="text/javascript" src="WebGl.js"></script>
+  
+ <script type="text/javascript">
+
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+      effacerCanevas(objgl); 
+    }
+
+  function effacerCanevas(objgl) {
+      // Mettre la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Effacer en profondeur avec la couleur
+      objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+  }
+
+</script>
+</head>
+
+<body onload="demarrer()"> 
+	<canvas id="monCanvas" width="640" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

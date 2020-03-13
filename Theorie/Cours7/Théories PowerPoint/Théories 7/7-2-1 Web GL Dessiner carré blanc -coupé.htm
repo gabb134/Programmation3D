@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>10-2-1 Dessiner carré</title>
+  
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderBlanc.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+    
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+	  const objProgShaders = initShaders(objgl); // iniatilise les sahaders
+	  const objCarre = creerCarre(objgl); // Définir le carré
+	  effacerCanevas(objgl);
+      dessiner(objgl, objProgShaders, objCarre); // Le dessiner
+	}
+    
+    // Pour dessiner le carré
+    function dessiner(objgl, objProgShaders, objCarre) {
+        // La vue sur le canevas
+        objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+        // Matrice de projection
+        let matProjection = mat4.create();
+        mat4.ortho(0, 3, -2, 1, -5, 5, matProjection);
+        // Relier la matrice de projection aux shaders
+        objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+        // Matrice du modèle
+        let matModeleVue = mat4.create();
+        mat4.identity(matModeleVue);
+        // Relier la matrice du modèle aux shaders
+        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+        // Relier les vertex aux shaders
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCarre);
+        objgl.vertexAttribPointer(objProgShaders.posVertex,3, objgl.FLOAT, false, 0, 0);
+
+        // Dessiner le carré
+        let intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+        objgl.drawArrays(objCarre.typeDessin, 0, intNbVertex);
+    }
+
+        // Pour effacer le canevas
+        function effacerCanevas(objgl) {
+          // Met la couleur d'effacement au noir et complétement opaque
+          objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+          // Efface les couleurs et le buffer de profondeur.
+          objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    //Pour créer le carré
+    function creerCarre(objgl) {
+        let objCarre = objgl.createBuffer();
+        let tabVertex = [
+             1.0, 1.0, 0.0,
+             1.0, -1.0, 0.0,
+            -1.0, -1.0, 0.0,
+            -1.0, 1.0, 0.0
+        ];
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCarre);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+        objCarre.typeDessin = objgl.LINE_LOOP;
+
+        return objCarre;
+    }
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+	<canvas id="monCanvas" width="640" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>
