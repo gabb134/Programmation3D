@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Cercle éclairé par Votre nom</title>
+  
+  <link rel="stylesheet" type="text/css" href="StyleLabo8.css" /> 
+   
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+    
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+	  const objProgShaders = initShaders(objgl); // iniatilise les sahaders
+	  const objCercle = creerCercle(objgl); // Définir le cercle
+	  const objCouleursCercle = creerCouleursCercle(objgl); // Définir les couleurs du cercle
+	  effacerCanevas(objgl);
+	  dessiner(objgl, objProgShaders, objCercle, objCouleursCercle); // Le dessiner
+	}
+    
+    // Pour dessiner l'Cercle
+    function dessiner(objgl, objProgShaders, objCercle, objCouleursCercle) {
+        // La vue sur le canevas
+        objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+        // Matrice de projection
+        const matProjection = mat4.create();
+        mat4.ortho(-2, 2, -2, 2, -5, 5, matProjection);
+        // Relier la matrice de projection aux shaders
+        objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+        // Matrice du modèle
+        const matModeleVue = mat4.create();
+        mat4.identity(matModeleVue);
+        // Relier la matrice du modèle aux shaders
+        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+        // Relier les vertex aux shaders
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCercle);
+        objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+        const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+        // Relier les couleurs aux shaders
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCercle);
+        objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+
+        // Dessiner le cercle
+        objgl.drawArrays(objCercle.typeDessin, 0, intNbVertex);
+       }  
+
+     // Pour effacer le canevas
+    function effacerCanevas(objgl) {
+         // Met la couleur d'effacement au noir et complétement opaque
+          objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+          // Efface les couleurs et le buffer de profondeur.
+          objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    // Pour créer le cercle
+    function creerCercle(objgl) {
+        const objCercle = objgl.createBuffer();
+        let tabVertex = [0, 0, 0] // Le centre du cercle;
+        for (let i = 0; i <= 360; i++) {
+            tabVertex = tabVertex.concat([Math.cos(i*Math.PI/180),Math.sin(i*Math.PI/180),0.0]);
+        }
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCercle);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+        objCercle.typeDessin = objgl.TRIANGLE_FAN;
+
+     return objCercle;
+    }
+
+    function creerCouleursCercle(objgl) {
+        const objCouleursCercle = objgl.createBuffer();
+        let tabCouleurs = [0.0, 0.0, 0.0, 1.0] // Le centre est noir opaque
+        for (let i = 0; i <= 360; i++) { // Le reste est blanc opaque
+            tabCouleurs = tabCouleurs.concat([1.0, 1.0, 1.0, 1.0]);
+        }
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCercle);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
+ 
+        return objCouleursCercle;
+    }
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+   <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Cercle éclairé<br />
+            </span> par 
+            <span class="sAuteurApp">
+                VotreNom
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="640">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+ 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+</html>
