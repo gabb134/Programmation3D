@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Maillage 2 par Gabriel Marrero</title>
+
+    <link rel="stylesheet" type="text/css" href="StyleLabo8.css" />
+
+    <script type="text/javascript" src="WebGl.js"></script>
+    <script type="text/javascript" src="ShaderCouleurs.js"></script>
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+    <script type="text/javascript">
+
+        let objCanvas = null;
+        let objgl = null;
+        let objProgShaders = null;
+        let objVertex = null;
+        let objCouleurs = null;
+        let objMaillage = null;
+
+        let fltAutourX = 0;
+        let fltAutourY = 0;
+
+        function demarrer() {
+            objCanvas = document.getElementById('monCanvas');
+            objCanvas.focus();
+            objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+            objProgShaders = initShaders(objgl);
+            objVertex = creerVertex(objgl);
+            objCouleurs = creerCouleursVertex(objgl);
+            objMaillage = creerMaillageVertex(objgl);
+
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, objVertex, objCouleurs, objMaillage);
+        }
+
+        function dessiner(objgl, objProgShaders, objVertex, objCouleurs, objMaillage) {
+            // La vue
+            objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+            // Matrice de projection
+            const matProjection = mat4.create();
+            mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+            // Relier la matrice aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+            // Matrice modèle-vue
+            const matModeleVue = mat4.create();
+            mat4.identity(matModeleVue);
+            mat4.rotateX(matModeleVue, fltAutourX);
+            mat4.rotateY(matModeleVue, fltAutourY);
+
+            // Relier la matrice aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+            // Relier les vertex aux shaders
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objVertex);
+            objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+            // Relier les couleurs aux shaders
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleurs);
+            objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+
+            // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+            objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillage);
+
+            // Dessiner les triangles
+            objgl.drawElements(objgl.TRIANGLES, objMaillage.intNbTriangles * 3, objgl.UNSIGNED_SHORT, 0);
+            // Dessiner les droites à la suite des triangles
+            objgl.drawElements(objgl.LINES, objMaillage.intNbDroites * 2, objgl.UNSIGNED_SHORT, objMaillage.intNbTriangles * 2 * 3);
+        }
+
+        function effacerCanevas(objgl) {
+            // Met la couleur d'effacement au noir et complétement opaque
+            objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+            // Efface les couleurs et le buffer de profondeur.
+            objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+        }
+
+        function creerVertex(objgl) {
+            const objVertex = objgl.createBuffer();
+
+            tabVertex = [
+                // Face avant (Z=1)
+                0.0, 0.0, 1.0,   // 0: Centre
+                1.0, 1.0, 1.0,   // 1: Coin haut droit
+                1.0, -1.0, 1.0,  // 2: Coin bas droit
+                -1.0, -1.0, 1.0,  // 3: Coin bas gauche
+                -1.0, 1.0, 1.0,  // 4: Coin haut gauche
+
+                // Face arrière (Z=-1) 
+                0.0, 0.0, -1.0,   // 5: Centre
+                1.0, 1.0, -1.0,   // 6: Coin haut droit
+                1.0, -1.0, -1.0,  // 7: Coin bas droit
+                -1.0, -1.0, -1.0,  // 8: Coin bas gauche
+                -1.0, 1.0, -1.0,  // 9: Coin haut gauche
+
+                //vertex au centre
+                0.0, 1.0, 0.0, //10: le centre du cube en haut. 
+                0.0, 0.0, 0.0, //11: le centre du cube au milieu
+                0.0, -1.0, 0.0 //12: le centre du cube en bas.
+
+            ];
+
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objVertex);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+            return objVertex;
+        }
+
+        function creerCouleursVertex(objgl) {
+            const objCouleurs = objgl.createBuffer();
+
+            // Face avant
+            let tabCouleurs = [1.0, 1.0, 1.0, 1.0]; // Blanc 
+            for (let i = 1; i <= 4; i++)
+                tabCouleurs = tabCouleurs.concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+
+            // Face arrière
+            tabCouleurs = tabCouleurs.concat([1.0, 1.0, 1.0, 1.0]); // Blanc 
+            for (let i = 1; i <= 4; i++)
+                tabCouleurs = tabCouleurs.concat([0.0, 1.0, 0.0, 1.0]); // Vert
+
+
+
+
+            // vertex #10
+            tabCouleurs = tabCouleurs.concat([1.0, 1.0, 1.0, 1.0]); // Blanc 
+            for (let i = 1; i <= 4; i++)
+                tabCouleurs = tabCouleurs.concat([1.0, 1.0, 1.0, 1.0]); // Vert
+
+
+
+
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleurs);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
+
+            return objCouleurs;
+        }
+
+        function creerMaillageVertex(objgl) {
+            const objMaillage = objgl.createBuffer();
+            // Le maillage                        
+            const tabMaillageVertex =
+                [ // Les 4 triangles de la face avant
+                    0, 1, 2,
+                    0, 2, 3,
+                    0, 3, 4,
+                    0, 4, 1,
+                    // Les 4 triangles de la face arrière
+                    5, 6, 7,
+                    5, 7, 8,
+                    5, 8, 9,
+                    5, 9, 6,
+                    /*// Les 4 droites 
+                    1, 6,
+                    2, 7,
+                    3, 8,
+                    4, 9*/
+
+                    /*11,1,
+                    11,2,
+                    11,3,
+                    11,4,
+                    11,4,
+                    11,3,
+                    11,2,
+                    11,1,
+                    11,0*/
+
+                    //au milieu du cube ver les 4 cotes 
+                    11, 1, 2,
+                    11, 2, 3,
+                    11, 3, 4,
+                    11, 4, 1,
+
+                    11, 6, 7,
+                    11, 7, 8,
+                    11, 8, 9,
+                    11, 9, 6,
+
+
+
+                ];
+
+            objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillage);
+            objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillageVertex), objgl.STATIC_DRAW);
+
+            // Le nombre de triangles
+            objMaillage.intNbTriangles = 16;
+            // Le nombre de droites
+            objMaillage.intNbDroites = 8;
+
+            return objMaillage;
+        }
+
+        // Pour faire tourner l'objet 3D
+        function tournerVertex() {
+            switch (event.keyCode) {
+                case 37: fltAutourY -= Math.PI / 90;
+                    break;
+                case 39: fltAutourY += Math.PI / 90;
+                    break;
+                case 38: fltAutourX -= Math.PI / 90;
+                    break;
+                case 40: fltAutourX += Math.PI / 90;
+                    break;
+            }
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, objVertex, objCouleurs, objMaillage);
+        }
+
+    </script>
+</head>
+
+<body onload="demarrer()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Maillage 2 <br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640" tabIndex="1" ; onkeydown="tournerVertex();return false">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+
+</html>

@@ -3,12 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Carré 1 par Votre nom</title>
+  <title>Carré 1 par Gabriel Marrero</title>
   
   <link rel="stylesheet" type="text/css" href="StyleLabo7.css" /> 
    
   <script type="text/javascript" src="WebGl.js"></script>
-  <script type="text/javascript" src="ShaderBlanc.js"></script>
+  <script type="text/javascript" src="ShaderJaune.js"></script>
   <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
     
  <script type="text/javascript">
@@ -16,7 +16,7 @@
     function demarrer() {
       var objCanvas = document.getElementById('monCanvas');
       var objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
-	  var objProgShaders = initShaders(objgl); // iniatilise les sahaders
+	  var objProgShaders = initShaders(objgl); // iniatilise les shaders
 	  var objCarre = creerCarre(objgl); // Définir le carré
 	  effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objCarre); // Le dessiner
@@ -51,7 +51,7 @@
         // Pour effacer le canevas
         function effacerCanevas(objgl) {
           // Met la couleur d'effacement au noir et complétement opaque
-          objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+          objgl.clearColor(1.0, 0.0, 0.0, 1.0);
           // Efface les couleurs et le buffer de profondeur.
           objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
     }
@@ -84,7 +84,7 @@
                 Carré<br />
             </span> par 
             <span class="sAuteurApp">
-                VotreNom
+                Gabriel Marrero
             </span> 
        </p>
     </header>

@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>A la première personne (pyramides) </title>
+  
+  <link rel="stylesheet" type="text/css" href="StyleLabo13.css" /> 
+
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+  <script type="text/javascript" src="Transformations.js"></script>
+  <script type="text/javascript" src="Camera.js"></script>
+
+ <script type="text/javascript">
+
+     let objgl = null;
+     let objProgShaders = null;
+     let objScene3D = null;
+
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+       objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+       objProgShaders = initShaders(objgl);
+       objScene3D = initScene3D(objgl); // Créer la scène
+      
+	  effacerCanevas(objgl);
+	  dessiner(objgl, objProgShaders, objScene3D);
+     }
+
+     function initScene3D(objgl) {
+         const objScene3D = new Object();
+         const tabObjets3D = new Array();
+
+         // La pyramide de gauche
+         let objet3D = new Object();
+         objet3D.vertex = creerPyramide(objgl);
+         objet3D.couleurs = creerCouleursPyramide(objgl);
+	     objet3D.maillage = null;
+         objet3D.transformations = creerTransformations();
+         setPositionsXYZ([-2,0,-12], objet3D.transformations); // A la gauche
+         tabObjets3D.push(objet3D);
+
+         // La pyramide du centre
+         objet3D = new Object();
+         objet3D.vertex = creerPyramide(objgl);
+         objet3D.couleurs = creerCouleursPyramide(objgl);
+		 objet3D.maillage = null;
+         objet3D.transformations = creerTransformations();
+         setPositionsXYZ([0, 0, -10], objet3D.transformations); // Au centre
+         setAngleY(90, objet3D.transformations);
+         tabObjets3D.push(objet3D);
+
+         // La pyramide de droite
+         objet3D = new Object();
+         objet3D.vertex = creerPyramide(objgl);
+         objet3D.couleurs = creerCouleursPyramide(objgl);
+		 objet3D.maillage = null;
+         objet3D.transformations = creerTransformations();
+         setPositionsXYZ([2, 0, -8], objet3D.transformations); // A la droite
+         setAngleY(180, objet3D.transformations);
+         tabObjets3D.push(objet3D);
+
+         // Mettre les objets 3D sur la scène
+         objScene3D.tabObjets3D = tabObjets3D;
+
+         // La caméra
+         const camera = creerCamera();
+         setPositionsCameraXYZ([0, 0, -20], camera);
+         setCiblesCameraXYZ([0, 0, 0], camera);
+         setOrientationsXYZ([0, 1, 0], camera);
+
+         // Mettre la caméra sur la scène
+         objScene3D.camera = camera;
+
+         return objScene3D;
+     }
+
+      function dessiner(objgl, objProgShaders, objScene3D) {
+          // La vue
+          objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+        
+          // Matrice de projection (en perspective)
+          const matProjection = mat4.create();
+		  const fltRapportCanevas = objgl.drawingBufferWidth / objgl.drawingBufferHeight;
+          mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);          
+		  // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+          for (let i = 0; i < objScene3D.tabObjets3D.length; i++) {
+              const vertex = objScene3D.tabObjets3D[i].vertex;
+              const couleurs = objScene3D.tabObjets3D[i].couleurs;
+              const maillage = objScene3D.tabObjets3D[i].maillage;
+              const transformations = objScene3D.tabObjets3D[i].transformations;
+  
+              // Matrice du modèle            
+              const matModeleVue = mat4.create();
+              mat4.identity(matModeleVue);
+			  			 
+             // Placer la caméra sur la scène
+              mat4.lookAt(getPositionsCameraXYZ(objScene3D.camera),
+                          getCiblesCameraXYZ(objScene3D.camera),
+                          getOrientationsXYZ(objScene3D.camera), 
+                          matModeleVue);
+ 			  
+              // Appliquer les transformations sur le modèle 
+              mat4.translate(matModeleVue, getPositionsXYZ(transformations));
+              mat4.scale(matModeleVue, getEchellesXYZ(transformations));
+              mat4.rotateX(matModeleVue, getAngleX(transformations) * Math.PI / 180);
+              mat4.rotateY(matModeleVue, getAngleY(transformations) * Math.PI / 180); 
+              mat4.rotateZ(matModeleVue, getAngleZ(transformations) * Math.PI / 180);
+
+              // Relier la matrice aux shaders
+              objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+              if (maillage == null)
+                  // Dessiner les sous-objets
+                  for (let j = 0; j < vertex.length; j++) {
+
+                      // Relier les vertex aux shaders
+                      objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
+                      objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+                      const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+                      // Relier les couleurs aux shaders
+                      objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
+                      objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+                      // Dessiner
+                      objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
+                  }
+              else { // Dessiner le maillage
+                  // Relier les vertex aux shaders
+                  objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+                  objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+                  // Relier les couleurs aux shaders
+                  objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
+                  objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+
+                  // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+                  objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
+
+                  // Dessiner les triangles
+                  objgl.drawElements(objgl.TRIANGLES, maillage.intNbTriangles * 3, objgl.UNSIGNED_SHORT, 0);
+                  // Dessiner les droites à la suite des triangles
+                  objgl.drawElements(objgl.LINES, maillage.intNbDroites * 2, objgl.UNSIGNED_SHORT, maillage.intNbTriangles * 2 * 3);
+              }
+          }
+      }
+
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function creerPyramide(objgl) {
+         const tabVertex = new Array();
+
+         // Face avant pleine
+         tabVertex[0] = [
+               0.0, 1.0, 0.0, 
+               1.0, -1.0, 1.0,
+              -1.0, -1.0, 1.0
+         ];
+
+         // Face gauche pleine
+         tabVertex[1] = [
+              0.0, 1.0, 0.0,
+              -1.0, -1.0, 1.0,
+             -1.0, -1.0, -1.0
+             ];
+
+         // Face arrière pleine
+         tabVertex[2] = [
+              0.0, 1.0, 0.0,
+              -1.0, -1.0, -1.0,
+             1.0, -1.0, -1.0
+         ];
+
+         // Face droite pleine
+         tabVertex[3] = [
+              0.0, 1.0, 0.0,
+              1.0, -1.0, -1.0,
+             1.0, -1.0, 1.0
+         ];
+
+         // Dessous
+         tabVertex[4] = [
+              1.0, -1.0, 1.0,
+              -1.0, -1.0, 1.0,
+               1.0, -1.0, -1.0,
+              -1.0, -1.0, -1.0
+         ];
+
+         // Lignes
+         tabVertex[5] = [
+               0.0, 1.0, 0.0, 1.0, -1.0, 1.0,
+               0.0, 1.0, 0.0, -1.0, -1.0, 1.0,
+               0.0, 1.0, 0.0, -1.0, -1.0, -1.0,
+               0.0, 1.0, 0.0, 1.0, -1.0, -1.0,
+
+              1.0, -1.0, 1.0, 1.0, -1.0, -1.0,
+              1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
+              -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,
+              -1.0, -1.0, 1.0, 1.0, -1.0, 1.0
+         ];
+
+         // Création des tampons
+         const tabObjPyramide = new Array();
+         for (let i = 0; i < 6; i++) {
+             tabObjPyramide[i] = objgl.createBuffer();
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjPyramide[i]);
+             objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
+             tabObjPyramide[i].typeDessin = (i < 4) ? objgl.TRIANGLES : ((i == 4) ? objgl.TRIANGLE_STRIP : objgl.LINES);
+         }
+
+         return tabObjPyramide;
+     }
+
+     function creerCouleursPyramide(objgl) {
+         const tabCouleurs = new Array();
+
+         // Couleurs face avant pleine
+         tabCouleurs[0] = []; // 
+         for (let i = 0; i < 3 ; i++)
+             tabCouleurs[0] = tabCouleurs[0].concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+
+         // Couleurs face gauche pleine
+         tabCouleurs[1] = []; // 
+         for (let i = 0; i < 3 ; i++)
+             tabCouleurs[1] = tabCouleurs[1].concat([0.0, 1.0, 0.0, 1.0]); // Vert
+
+         // Couleurs face arrière pleine
+         tabCouleurs[2] = []; // 
+         for (let i = 0; i < 3 ; i++)
+             tabCouleurs[2] = tabCouleurs[2].concat([0.0, 0.0, 1.0, 1.0]); // Bleu
+
+         // Couleurs face droite pleine
+         tabCouleurs[3] = []; // 
+         for (let i = 0; i < 3 ; i++)
+             tabCouleurs[3] = tabCouleurs[3].concat([1.0, 0.0, 1.0, 1.0]); // Magenta
+
+         // Couleurs face droite pleine
+         tabCouleurs[4] = []; // 
+         for (let i = 0; i < 4 ; i++)
+             tabCouleurs[4] = tabCouleurs[4].concat([0.0, 1.0, 1.0, 1.0]); // Cyan
+
+         // Couleurs lignes
+         tabCouleurs[5] = []; // 
+         for (let i = 0; i < 16 ; i++)
+             tabCouleurs[5] = tabCouleurs[5].concat([1.0, 1.0, 1.0, 1.0]); // Blanc
+
+         // Création des tampons
+         const tabObjCouleursPyramide = new Array();
+         for (let i = 0; i < 6; i++) {
+             tabObjCouleursPyramide[i] = objgl.createBuffer();
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursPyramide[i]);
+             objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);
+         }
+
+         return tabObjCouleursPyramide;
+     }
+
+    function deplacerCamera() {
+        const camera = objScene3D.camera;
+ 
+         if (event.keyCode == 33 || event.keyCode == 34) {
+            // 33: Page Up; 34: Page Down
+            const intDirection = (event.keyCode == 33) ? 1 : -1;
+            setCibleCameraY(getCibleCameraY(camera) + intDirection * 0.2, camera);
+            setPositionCameraY(getPositionCameraY(camera) + intDirection * 0.2, camera);
+        }
+
+        effacerCanevas(objgl);
+        dessiner(objgl, objProgShaders, objScene3D);
+    }
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+   <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                À la première personne (pyramides)<br />
+            </span> par 
+            <span class="sAuteurApp">
+                VotreNom
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="640" tabIndex="1" onkeydown="deplacerCamera(); return false">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+ 		<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2016
+        </p>
+    </footer>
+
+</body>
+
+
+</html>

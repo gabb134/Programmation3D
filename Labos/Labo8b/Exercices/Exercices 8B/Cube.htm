@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Cube par Gabriel Marrero</title>
+
+    <link rel="stylesheet" type="text/css" href="StyleLabo8.css" />
+
+    <script type="text/javascript" src="WebGl.js"></script>
+    <script type="text/javascript" src="ShaderCouleurs.js"></script>
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+    <script type="text/javascript">
+
+        let objCanvas = null;
+        let objgl = null;
+        let objProgShaders = null;
+        let tabObjCube = null;
+        let tabObjCouleursCube = null;
+        let fltAutourX = 0;
+        let fltAutourY = 0;
+
+        function demarrer() {
+            objCanvas = document.getElementById('monCanvas');
+            objCanvas.focus();
+            objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+            objProgShaders = initShaders(objgl);
+            tabObjCube = creerCube(objgl);
+            tabObjCouleursCube = creerCouleursCube(objgl);
+
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, tabObjCube, tabObjCouleursCube);
+        }
+
+        function dessiner(objgl, objProgShaders, tabObjCube, tabObjCouleursCube) {
+            // La vue
+            objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+            // Matrice de projection
+            const matProjection = mat4.create();
+            mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+            // Relier la matrice aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+            // Matrice modèle-vue
+            const matModeleVue = mat4.create();
+            mat4.identity(matModeleVue);
+            mat4.rotateX(matModeleVue, fltAutourX);
+            mat4.rotateY(matModeleVue, fltAutourY);
+
+            // Relier la matrice aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+            for (let i = 0; i < tabObjCube.length; i++) {
+                const objCube = tabObjCube[i];
+                const objCouleursCube = tabObjCouleursCube[i];
+
+                // Relier les vertex aux shaders
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, objCube);
+                objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+                const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+                // Relier les couleurs aux shaders
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCube);
+                objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+                // Dessiner
+                objgl.drawArrays(objCube.typeDessin, 0, intNbVertex);
+            }
+        }
+
+        function effacerCanevas(objgl) {
+            // Met la couleur d'effacement au noir et complétement opaque
+            objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+            // Efface les couleurs et le buffer de profondeur.
+            objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+        }
+
+        function creerCube(objgl) {
+            const tabVertex = new Array();
+
+            // Face avant pleine
+            tabVertex[0] = [
+                0.0, 0.0, 1.0, // Centre du plan 
+                1.0, 1.0, 1.0,
+                -1.0, 1.0, 1.0,
+                -1.0, -1.0, 1.0,
+                1.0, -1.0, 1.0,
+                1.0, 1.0, 1.0
+            ];
+
+            // Face arrère pleine
+            tabVertex[1] = [
+                0.0, 0.0, -1.0, // Centre du plan
+                1.0, 1.0, -1.0,
+                -1.0, 1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, 1.0, -1.0
+            ];
+            // Face cote droit
+            tabVertex[2] = [
+                1.0, 0.0, 0.0, // Centre du plan 
+                1.0, 1.0, 1.0,
+                1.0, 1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, -1.0, 1.0,
+                1.0, 1.0, 1.0
+            ];
+            // Face cote gauche
+            tabVertex[3] = [
+                -1.0, 0.0, 0.0, // Centre du plan 
+                -1.0, 1.0, 1.0,
+                -1.0, 1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                -1.0, -1.0, 1.0,
+                -1.0, 1.0, 1.0
+            ];
+            // Face en haut
+            tabVertex[4] = [
+                0.0, 1.0, 0.0, // Centre du plan 
+                1.0, 1.0, 1.0,
+                1.0, 1.0, -1.0,
+                -1.0, 1.0, -1.0,
+                -1.0, 1.0, 1.0,
+                -1.0, 1.0, 1.0,
+                1.0, 1.0, 1.0
+            ];
+            // Face en bas
+            tabVertex[5] = [
+                0.0, -1.0, 0.0, // Centre du plan 
+                1.0, -1.0, 1.0,
+                1.0, -1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                -1.0, -1.0, 1.0,
+                -1.0, -1.0, 1.0,
+                1.0, -1.0, 1.0
+            ];
+
+
+
+            // Contour avant
+            tabVertex[6] = [
+                1.0, 1.0, 1.0,
+                -1.0, 1.0, 1.0,
+                -1.0, -1.0, 1.0,
+                1.0, -1.0, 1.0
+            ];
+
+            // Contour arrière
+            tabVertex[7] = [
+                1.0, 1.0, -1.0,
+                -1.0, 1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0
+            ];
+
+            // Droites reliées aux 2 faces
+            tabVertex[8] = [
+                1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+                -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+                1.0, -1.0, -1.0, 1.0, -1.0, 1.0,
+                -1.0, -1.0, -1.0, -1.0, -1.0, 1.0
+            ];
+
+
+
+
+            // Création des tampons
+            const tabObjCube = new Array();
+            for (let i = 0; i < 9; i++) {
+                tabObjCube[i] = objgl.createBuffer();
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCube[i]);
+                objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
+                tabObjCube[i].typeDessin = (i < 6) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+            }
+
+            return tabObjCube;
+        }
+
+        function creerCouleursCube(objgl) {
+            const tabCouleurs = new Array();
+
+            // Couleurs face avant pleine
+            tabCouleurs[0] = [1.0, 1.0, 1.0, 1.0]; // Blanc 
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[0] = tabCouleurs[0].concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+
+            // Couleurs face arrière pleine
+            tabCouleurs[1] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[1] = tabCouleurs[1].concat([0.0, 1.0, 0.0, 1.0]); // Vert
+
+            // Couleurs face cote droite pleine
+            tabCouleurs[2] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[2] = tabCouleurs[2].concat([1.0, 1.0, 0.0, 1.0]); // Jaune
+
+            // Couleurs face cote gauche pleine
+            tabCouleurs[3] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[3] = tabCouleurs[3].concat([0.0, 0.0, 1.0, 1.0]); // bleu
+
+            // Couleurs face en haut
+            tabCouleurs[4] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[4] = tabCouleurs[4].concat([1.0, 0.5, 0.0, 1.0]); // orange
+
+            // Couleurs face en bas
+            tabCouleurs[5] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+            for (let i = 1; i < 6; i++)
+                tabCouleurs[5] = tabCouleurs[5].concat([0.5, 0.0, 0.0, 0.5]); // rose
+
+            // Couleurs contour avant
+            tabCouleurs[6] = [];
+            for (let i = 0; i < 4; i++)
+                tabCouleurs[6] = tabCouleurs[6].concat([1.0, 1.0, 1.0, 1.0]); // Blanc
+
+            // Couleurs contour arrière
+            tabCouleurs[7] = tabCouleurs[6];
+
+            // Couleurs droites reliées aux 2 faces
+            tabCouleurs[8] = tabCouleurs[6].concat(tabCouleurs[5]);
+
+
+            // Création des tampons
+            const tabObjCouleursCube = new Array();
+            for (let i = 0; i < 9; i++) {
+                tabObjCouleursCube[i] = objgl.createBuffer();
+                objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursCube[i]);
+                objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);
+            }
+
+            return tabObjCouleursCube;
+        }
+
+        // Pur faire tourner le cube
+        function tournerCube() {
+            switch (event.keyCode) {
+                case 37: fltAutourY -= Math.PI / 90;
+                    break;
+                case 39: fltAutourY += Math.PI / 90;
+                    break;
+                case 38: fltAutourX -= Math.PI / 90;
+                    break;
+                case 40: fltAutourX += Math.PI / 90;
+                    break;
+            }
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, tabObjCube, tabObjCouleursCube);
+        }
+
+    </script>
+</head>
+
+<body onload="demarrer()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Cube<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640" tabIndex="1" ; onkeydown="tournerCube();return false">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+
+</html>

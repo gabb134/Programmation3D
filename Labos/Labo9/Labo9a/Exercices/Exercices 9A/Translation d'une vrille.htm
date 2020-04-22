@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Translation d'une vrille par Gabriel Marrero</title>
+  <link rel="stylesheet" type="text/css" href="StyleLabo12.css" />   
+  
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+    
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+      const objProgShaders = initShaders(objgl);
+      const tabObjVrille = creerVrille(objgl);
+      const tabObjCouleursVrille = creerCouleursVrille(objgl);
+      
+	  effacerCanevas(objgl);
+	  dessiner(objgl, objProgShaders, tabObjVrille, tabObjCouleursVrille);
+      }
+
+      function dessiner(objgl, objProgShaders, tabObjVrille, tabObjCouleursVrille) {
+          // La vue
+          objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+          
+          // Matrice de projection
+          const matProjection = mat4.create();
+          mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+          // Matrice du modèle
+          const matModeleVue = mat4.create();
+          mat4.identity(matModeleVue);
+          mat4.translate(matModeleVue,[-4,4,0])
+ 
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+          for (let i = 0; i < tabObjVrille.length; i++) {
+              const objVrille = tabObjVrille[i];
+              const objCouleursVrille = tabObjCouleursVrille[i];
+
+              // Relier les vertex aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, objVrille);
+              objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+              const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+              // Relier les couleurs aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursVrille);
+              objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+              // Dessiner
+              objgl.drawArrays(objVrille.typeDessin, 0, intNbVertex);
+          }
+      }
+
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function creerVrille(objgl) {
+	   const intNbCirconvolutions = 10;
+       let tabVertex = [];
+       for (let i = 0; i < 360 * intNbCirconvolutions; i++) {
+           const fltRayon = i / (360 * intNbCirconvolutions);
+           tabVertex = tabVertex.concat([Math.cos(i * Math.PI / 180) * fltRayon, Math.sin(i * Math.PI / 180) * fltRayon, fltRayon]);
+       }
+	   
+	   const tabObjVrille = new Array();
+       for (let i=0; i < 1; i++) {
+            tabObjVrille[i] = objgl.createBuffer();
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjVrille[i]);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+            tabObjVrille[i].typeDessin = objgl.LINE_STRIP;
+        }
+
+       return tabObjVrille;
+    }
+    
+
+    function creerCouleursVrille(objgl) {
+        tabCouleurs = [];
+		const intNbCirconvolutions = 10;
+        for (let i = 0; i < 360 * intNbCirconvolutions; i++)
+            tabCouleurs = tabCouleurs.concat([1.0, 1.0, 0.0, 1.0]); // jaune
+        
+        const tabObjCouleursVrille = new Array();
+        for (let i = 0; i < 1; i++) {
+            tabObjCouleursVrille[i] = objgl.createBuffer();
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursVrille[i]);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
+        }
+
+        return tabObjCouleursVrille;
+    }
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+   <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Translation d'une vrille<br />
+            </span> par 
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="640">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+</html>

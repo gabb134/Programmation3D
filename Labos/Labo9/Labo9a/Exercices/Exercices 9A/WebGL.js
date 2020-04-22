@@ -1,0 +1,16 @@
+  // Librairie WebGl
+  
+  function initWebGL(objCanvas) {
+	  let objgl = null;
+      try { 
+          // Essayer de récupérer le contexte standard. En cas d'échec, il teste l'appel expérimental
+          objgl = objCanvas.getContext('webgl') || objCanvas.getContext('experimental-webgl');
+          objgl.enable(objgl.DEPTH_TEST); // Active le test de profondeur
+          objgl.depthFunc(objgl.LEQUAL);  // Les objets proches cachent les objets lointains
+      } 
+      catch(e) {
+		alert('Impossible d\'initialiser le WebGL. Il est possible que votre navigateur ne supporte pas cette fonctionnalité.\n', e.message); 
+	  } 
+	 
+	  return objgl;
+  }

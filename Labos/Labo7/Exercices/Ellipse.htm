@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Ellipse par Votre nom</title>
+  <title>Ellipse par Gabriel Marrero</title>
   
   <link rel="stylesheet" type="text/css" href="StyleLabo7.css" /> 
    
@@ -59,8 +59,10 @@
     function creerEllipse(objgl) {
      var objEllipse = objgl.createBuffer();
      var tabVertex = [];
+     let fltRayon1 = 2;
+     let fltRayon2 = 1;
        for (var i = 0; i < 360; i++) {
-         tabVertex = tabVertex.concat([Math.cos(i*Math.PI/180),Math.sin(i*Math.PI/180),0.0]);
+         tabVertex = tabVertex.concat([Math.cos(i*Math.PI/180)*fltRayon1,Math.sin(i*Math.PI/180)*fltRayon2,0.0]);
      }
      objgl.bindBuffer(objgl.ARRAY_BUFFER, objEllipse);
      objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
@@ -82,7 +84,7 @@
                 Ellipse<br />
             </span> par 
             <span class="sAuteurApp">
-                VotreNom
+                Gabriel Marrero
             </span> 
        </p>
     </header>

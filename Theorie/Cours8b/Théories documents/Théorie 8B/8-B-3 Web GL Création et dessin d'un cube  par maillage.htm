@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>11-B-3 Création et dessin d'un cube par maillage</title>
+  
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+    
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+      const objProgShaders = initShaders(objgl);
+      const objCube = creerCube(objgl);
+      const objCouleursCube = creerCouleursCube(objgl);
+      const objMaillageCube = creerMaillageCube(objgl);
+      
+	  effacerCanevas(objgl);
+	  dessiner(objgl, objProgShaders, objCube, objCouleursCube, objMaillageCube);
+      }
+
+    function dessiner(objgl, objProgShaders, objCube, objCouleursCube, objMaillageCube) {
+          // La vue
+          objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+          
+          // Matrice de projection
+          const matProjection = mat4.create();
+          mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+          // Matrice modèle-vue
+          const matModeleVue = mat4.create();
+          mat4.identity(matModeleVue);
+          mat4.rotateY(matModeleVue, Math.PI / 3);
+          mat4.rotateZ(matModeleVue, Math.PI / 3);
+
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+        
+          // Relier les vertex aux shaders
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, objCube);
+          objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+          // Relier les couleurs aux shaders
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCube);
+          objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+          
+          // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+          objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageCube);
+         
+          // Dessiner les triangles
+          objgl.drawElements(objgl.TRIANGLES, objMaillageCube.intNbTriangles * 3, objgl.UNSIGNED_SHORT, 0);
+          // Dessiner les droites à la suite des triangles
+          objgl.drawElements(objgl.LINES, objMaillageCube.intNbDroites * 2, objgl.UNSIGNED_SHORT, objMaillageCube.intNbTriangles * 2 * 3);
+         }
+      
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function creerCube(objgl) {
+        const objCube = objgl.createBuffer();
+
+        tabVertex = [
+             // Face avant (Z=1)
+			  0.0, 0.0, 1.0,   // 0: Centre
+              1.0, 1.0, 1.0,   // 1: Coin haut droit
+              1.0, -1.0, 1.0,  // 2: Coin bas droit
+             -1.0, -1.0, 1.0,  // 3: Coin bas gauche
+              -1.0, 1.0, 1.0,  // 4: Coin haut gauche
+			
+              // Face arrière (Z=-1) 
+              0.0, 0.0, -1.0,   // 5: Centre
+              1.0, 1.0, -1.0,   // 6: Coin haut droit
+              1.0, -1.0, -1.0,  // 7: Coin bas droit
+             -1.0, -1.0, -1.0,  // 8: Coin bas gauche
+              -1.0, 1.0, -1.0  // 9: Coin haut gauche
+           ];
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCube);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+       
+       return objCube;   
+    }
+
+     // Couleurs des vertex
+    function creerCouleursCube(objgl) {
+        const objCouleursCube = objgl.createBuffer();
+       
+        // Face avant
+        let tabCouleurs = [1.0, 1.0, 1.0, 1.0]; // Blanc 
+        for (let i = 1; i <= 4; i++)
+            tabCouleurs = tabCouleurs.concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+        
+        // Face arrière
+        tabCouleurs = tabCouleurs.concat([1.0, 1.0, 1.0, 1.0]); // Blanc 
+        for (let i = 1; i <= 4; i++)
+            tabCouleurs = tabCouleurs.concat([0.0, 1.0, 0.0, 1.0]); // Vert
+       
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCube);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
+           
+        return objCouleursCube;
+    }
+
+     // Le maillage
+    function creerMaillageCube(objgl) {
+        const objMaillageCube = objgl.createBuffer();
+       // Le maillage                        
+        const tabMaillageCube =
+            [ // Les 4 triangles de la face avant
+             0, 1, 2,
+             0, 2, 3,
+             0, 3, 4,
+             0, 4, 1,
+             // Les 4 triangles de la face arrière
+             5, 6, 7,
+             5, 7, 8,
+             5, 8, 9,
+             5, 9, 6,
+             // Les 4 droites 
+             1, 6,
+             2, 7,
+             3, 8,
+             4, 9
+            ];
+
+        objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageCube);
+        objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillageCube), objgl.STATIC_DRAW);
+
+        // Le nombre de triangles
+        objMaillageCube.intNbTriangles = 8;
+        // Le nombre de droites
+        objMaillageCube.intNbDroites = 4;
+
+        return objMaillageCube;
+    }
+        
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+	<canvas id="monCanvas" width="640" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>

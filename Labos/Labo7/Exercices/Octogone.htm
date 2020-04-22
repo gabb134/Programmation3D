@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Octogone par Votre nom</title>
+  <title>Octogone par Gabriel Marrero</title>
   
   <link rel="stylesheet" type="text/css" href="StyleLabo7.css" /> 
    
@@ -60,10 +60,20 @@
     function creerOctogone(objgl) {
         var objOctogone = objgl.createBuffer();
         var tabVertex = [
-             1.0, 1.0, 0.0,
+             /*1.0, 1.0, 0.0,
              1.0, -1.0, 0.0,
             -1.0, -1.0, 0.0,
-            -1.0, 1.0, 0.0
+            -1.0, 1.0, 0.0*/
+             -0.5,1.0,0.0,
+             0.5,1.0,0.0,
+             1.0,0.5,0.0,
+             1.0,-0.5,0.0,
+             0.5,-1.0,0.0,
+             -0.5,-1.0,0.0,
+             -1.0,-0.5,0.0,
+             -1.0,0.5,0.0
+
+
         ];
 
         objgl.bindBuffer(objgl.ARRAY_BUFFER, objOctogone);
@@ -84,7 +94,7 @@
                 Octogone<br />
             </span> par 
             <span class="sAuteurApp">
-                VotreNom
+                Gabriel Marrero
             </span> 
        </p>
     </header>

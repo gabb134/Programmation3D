@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Cercle plein par Votre nom</title>
+  <title>Cercle plein par Gabriel Marrero</title>
   
   <link rel="stylesheet" type="text/css" href="StyleLabo7.css" /> 
    
@@ -24,11 +24,11 @@
     
       function dessiner(objgl, objProgShaders, objCercle) {
           // La vue
-          objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+          objgl.viewport( objgl.drawingBufferWidth*2/3, 0, objgl.drawingBufferWidth/3, objgl.drawingBufferHeight/3);
 
           // Matrice de projection
           var matProjection = mat4.create();
-          mat4.ortho(-2, 2, -2, 2, -5, 5, matProjection);
+          mat4.ortho(-1, 1, -1, 1, -5, 5, matProjection);
           // Relier la matrice aux shaders
           objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
 
@@ -78,7 +78,7 @@
                 Cercle plein<br />
             </span> par 
             <span class="sAuteurApp">
-                VotreNom
+                Gabriel Marrero
             </span> 
        </p>
     </header>

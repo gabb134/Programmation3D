@@ -1,111 +1,119 @@
 ﻿<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Courbe cosinus par Votre nom</title>
-  
-  <link rel="stylesheet" type="text/css" href="StyleLabo7.css" /> 
-   
-  <script type="text/javascript" src="WebGl.js"></script>
-  <script type="text/javascript" src="ShaderBlanc.js"></script>
-  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
-    
- <script type="text/javascript">
-    
-    function demarrer() {
-      var objCanvas = document.getElementById('monCanvas');
-      var objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
-	  var objProgShaders = initShaders(objgl); // iniatilise les sahaders
-	  var objCourbeCosinus = creerCourbeCosinus(objgl); // Définir la courbe Cosinus
-	  effacerCanevas(objgl);
-      dessiner(objgl, objProgShaders, objCourbeCosinus); // Le dessiner
-	}
-    
-    // Pour dessiner la courbe Cosinus
-    function dessiner(objgl, objProgShaders, objCourbeCosinus) {
-        // La vue sur le canevas
-        objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Courbe cosinus par Gabriel Marrero</title>
 
-        // Matrice de projection
-        var matProjection = mat4.create();
-        mat4.ortho(-4, 4, -4, 4, -5, 5, matProjection);
-        // Relier la matrice de projection aux shaders
-        objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+    <link rel="stylesheet" type="text/css" href="StyleLabo7.css" />
 
-        // Matrice du modèle
-        var matModeleVue = mat4.create();
-        mat4.identity(matModeleVue);
-        // Relier la matrice du modèle aux shaders
-        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+    <script type="text/javascript" src="WebGl.js"></script>
+    <script type="text/javascript" src="ShaderBlanc.js"></script>
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
 
-        // Relier les vertex aux shaders
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, objCourbeCosinus);
-        objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+    <script type="text/javascript">
 
-        // Dessiner la courbe Cosinus
-        var intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
-        objgl.drawArrays(objCourbeCosinus.typeDessin, 0, intNbVertex);
-       }  
+        function demarrer() {
+            var objCanvas = document.getElementById('monCanvas');
+            var objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+            var objProgShaders = initShaders(objgl); // iniatilise les sahaders
+            var objCourbeCosinus = creerCourbeCosinus(objgl); // Définir la courbe Cosinus
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, objCourbeCosinus); // Le dessiner
+        }
+
+        // Pour dessiner la courbe Cosinus
+        function dessiner(objgl, objProgShaders, objCourbeCosinus) {
+            // La vue sur le canevas
+            objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+            // Matrice de projection
+            var matProjection = mat4.create();
+            mat4.ortho(-4, 4, -4, 4, -5, 5, matProjection);
+            // Relier la matrice de projection aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+            // Matrice du modèle
+            var matModeleVue = mat4.create();
+            mat4.identity(matModeleVue);
+            // Relier la matrice du modèle aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+            // Relier les vertex aux shaders
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCourbeCosinus);
+            objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+
+            // Dessiner la courbe Cosinus
+            var intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+            objgl.drawArrays(objCourbeCosinus.typeDessin, 0, intNbVertex);
+        }
 
         // Pour effacer le canevas
         function effacerCanevas(objgl) {
-          // Met la couleur d'effacement au noir et complétement opaque
-          objgl.clearColor(0.0, 0.0, 0.0, 1.0);
-          // Efface les couleurs et le buffer de profondeur.
-          objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
-    }
+            // Met la couleur d'effacement au noir et complétement opaque
+            objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+            // Efface les couleurs et le buffer de profondeur.
+            objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+        }
 
-    //Pour créer la courbe Cosinus
-    function creerCourbeCosinus(objgl) {
-     var objCourbeCosinus = objgl.createBuffer();
-     var tabVertex = [];
-        for (var i = 0; i < 360; i++) {
-         tabVertex = tabVertex.concat([Math.cos(i*Math.PI/180),Math.sin(i*Math.PI/180),0.0]);
-     }
-    
-     objgl.bindBuffer(objgl.ARRAY_BUFFER, objCourbeCosinus);
-     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+        //Pour créer la courbe Cosinus
+        function creerCourbeCosinus(objgl) {
+            var objCourbeCosinus = objgl.createBuffer();
+            var tabVertex = [];
 
-    // Rejoindre par des droites
-     objCourbeCosinus.typeDessin = objgl.LINE_STRIP;
+            let test = -180;
+            for (var i = 0; i < 360; i++) {
+                test++;
+                tabVertex = tabVertex.concat([((i - 180) * Math.PI / 180), Math.cos((i - 180) * Math.PI / 180), 0.0]);
+                //console.log(Math.cos((i-180)*Math.PI/180));
+                // console.log(Math.cos((i+180)*Math.PI/180));
+                console.log(Math.cos((i - 180) * Math.PI / 180));
+            }
 
-     return objCourbeCosinus;
-    }
-  
-</script>
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCourbeCosinus);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+            // Rejoindre par des droites
+            objCourbeCosinus.typeDessin = objgl.LINE_STRIP;
+
+            return objCourbeCosinus;
+        }
+
+    </script>
 </head>
 
-<body onload="demarrer()"> 
-   <header class="sTexteCentre sLargeurDiv sEntete">
-        <p> 
+<body onload="demarrer()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
             <span class="sTitreApp">
                 Courbe Cosinus<br />
-            </span> par 
+            </span> par
             <span class="sAuteurApp">
-                VotreNom
-            </span> 
-       </p>
+                Gabriel Marrero
+            </span>
+        </p>
     </header>
 
-    <main class="sLargeurDiv sCorps">	
-	   <canvas id="monCanvas" width="640" height="640">
-		    Votre navigateur ne supporte pas la balise canvas
-	    </canvas>
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
     </main>
 
     <footer class="sLargeurDiv sPiedDePage">
         <p>
             <a href="http://www.cgodin.qc.ca">
                 <img src="logoCGG.jpg" alt="logoCGG" />
-            </a> 
- 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
-	           Département d'informatique du Cégep Gérald-Godin
-	        </a> 
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
             <br />
             &copy; 2020
         </p>
     </footer>
 
 </body>
+
 </html>

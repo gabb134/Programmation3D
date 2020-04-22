@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Octogone plein en degradé par Gabriel Marrero</title>
+
+    <link rel="stylesheet" type="text/css" href="StyleLabo8.css" />
+
+    <script type="text/javascript" src="WebGl.js"></script>
+    <script type="text/javascript" src="ShaderCouleurs.js"></script>
+    <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+
+    <script type="text/javascript">
+
+        function demarrer() {
+            const objCanvas = document.getElementById('monCanvas');
+            const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+            const objProgShaders = initShaders(objgl); // iniatilise les sahaders
+            const objOctogone = creerOctogone(objgl); // Définir l'octogone
+            const objCouleursOctogone = creerCouleursOctogone(objgl); // Définir les couleurs de l'octogone
+            effacerCanevas(objgl);
+            dessiner(objgl, objProgShaders, objOctogone, objCouleursOctogone); // Le dessiner
+        }
+
+        // Pour dessiner l'octogone
+        function dessiner(objgl, objProgShaders, objOctogone, objCouleursOctogone) {
+            // La vue sur le canevas
+            objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+            // Matrice de projection
+            const matProjection = mat4.create();
+            mat4.ortho(-2, 2, -2, 2, -5, 5, matProjection);
+            // Relier la matrice de projection aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+            // Matrice du modèle
+            const matModeleVue = mat4.create();
+            mat4.identity(matModeleVue);
+            // Relier la matrice du modèle aux shaders
+            objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+            // Relier les vertex aux shaders
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objOctogone);
+            objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+            const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+            // Relier les couleurs aux shaders
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursOctogone);
+            objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0)
+
+            // Dessiner l'octogone
+            objgl.drawArrays(objOctogone.typeDessin, 0, intNbVertex);
+        }
+
+        // Pour effacer le canevas
+        function effacerCanevas(objgl) {
+            // Met la couleur d'effacement au noir et complétement opaque
+            objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+            // Efface les couleurs et le buffer de profondeur.
+            objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+        }
+
+        // Pour créer l'octogone
+        function creerOctogone(objgl) {
+            const objOctogone = objgl.createBuffer();
+            const tabVertex = [
+                /*  1.0, 1.0, 0.0,
+                  1.0, -1.0, 0.0,
+                 -1.0, -1.0, 0.0,
+                 -1.0, 1.0, 0.0*/
+                 0.0,0.0,0.0, // le centre de loctogone
+                -0.5, 1.0, 0.0,
+                0.5, 1.0, 0.0,
+                1.0, 0.5, 0.0,
+                1.0, -0.5, 0.0,
+                0.5, -1.0, 0.0,
+                -0.5, -1.0, 0.0,
+                -1.0, -0.5, 0.0,
+                -1.0, 0.5, 0.0,
+                -0.5, 1.0, 0.0 //Repetition pour fermer loctogine
+            ];
+
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objOctogone);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
+
+            objOctogone.typeDessin = objgl.TRIANGLE_FAN;
+
+            return objOctogone;
+        }
+
+        function creerCouleursOctogone(objgl) {
+            const objCouleursOctogone = objgl.createBuffer();
+            let tabCouleurs = [
+                /*  LEGENDE DES COULEURS
+                        1.0, 0.0, 0.0, 1.0,//Rouge Opaque
+                        0.0, 1.0, 0.0, 1.0,//Vert Opaque
+                        0.0, 0.0, 1.0, 1.0, //Bleu Opaque
+                        1.0, 1.0, 1.0, 1.0 //Blanc Opaque
+                
+                */
+                0.0,0.0,0.0,0.0, //Pour le centre
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0,
+                1.0, 0.5, 0.0, 1.0
+
+
+            ];
+            for (let i = 0; i < 4; i++) // 
+               // tabCouleurs = tabCouleurs.concat([1.0, 1.0, 0.0, 1.0]);
+               tabCouleurs = [...tabCouleurs, ...[1.0, 0.5, 0.0, 1.0]];
+
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursOctogone);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
+
+            return objCouleursOctogone;
+        }
+
+    </script>
+</head>
+
+<body onload="demarrer()">
+    <header class="sTexteCentre sLargeurDiv sEntete">
+        <p>
+            <span class="sTitreApp">
+                Octogone plein en degradé<br />
+            </span> par
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span>
+        </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">
+        <canvas id="monCanvas" width="640" height="640">
+            Votre navigateur ne supporte pas la balise canvas
+        </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a>
+            <a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+                Département d'informatique du Cégep Gérald-Godin
+            </a>
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+
+</html>

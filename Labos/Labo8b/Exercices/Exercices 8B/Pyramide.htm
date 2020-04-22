@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Pyramide par Gabriel Marrero</title>
+  
+  <link rel="stylesheet" type="text/css" href="StyleLabo8.css" /> 
+   
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+
+     let objCanvas = null;
+     let objgl = null;
+     let objProgShaders = null;
+     let tabObjPyramide = null;
+     let tabObjCouleursPyramide = null;
+     let fltAutourX = 0;
+     let fltAutourY = 0;
+    
+     function demarrer() {
+         objCanvas = document.getElementById('monCanvas');
+         objCanvas.focus();
+         objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+         objProgShaders = initShaders(objgl);
+         tabObjPyramide = creerPyramide(objgl);
+         tabObjCouleursPyramide = creerCouleursPyramide(objgl);
+
+         effacerCanevas(objgl);
+         dessiner(objgl, objProgShaders, tabObjPyramide, tabObjCouleursPyramide);
+     }
+
+     function dessiner(objgl, objProgShaders, tabObjPyramide, tabObjCouleursPyramide) {
+         // La vue
+         objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+
+         // Matrice de projection
+         const matProjection = mat4.create();
+         mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+         // Relier la matrice aux shaders
+         objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+         // Matrice modèle-vue
+         const matModeleVue = mat4.create();
+         mat4.identity(matModeleVue);
+         mat4.rotateX(matModeleVue, fltAutourX);
+         mat4.rotateY(matModeleVue, fltAutourY);
+
+         // Relier la matrice aux shaders
+         objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+         for (let i = 0; i < tabObjPyramide.length; i++) {
+             const objPyramide = tabObjPyramide[i];
+             const objCouleursPyramide = tabObjCouleursPyramide[i];
+
+             // Relier les vertex aux shaders
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, objPyramide);
+             objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+             const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+             // Relier les couleurs aux shaders
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursPyramide);
+             objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+             // Dessiner
+             objgl.drawArrays(objPyramide.typeDessin, 0, intNbVertex);
+         }
+     }
+
+     function effacerCanevas(objgl) {
+         // Met la couleur d'effacement au noir et complétement opaque
+         objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+         // Efface les couleurs et le buffer de profondeur.
+         objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+     }
+
+     function creerPyramide(objgl) {
+         const tabVertex = new Array();
+
+         // Face avant du triangle
+         tabVertex[0] = [
+                // Centre du plan 
+               0.0, 2.0, 0.0,
+               1.0, 0.0, 1.0,
+              -1.0, 0.0, 1.0
+            
+         ];
+         
+         // Face arriere du triangle
+         tabVertex[1] = [
+                // Centre du plan 
+               0.0, 2.0, 0.0,
+               1.0, 0.0, -1.0,
+              -1.0, 0.0, -1.0
+            
+         ];
+         
+         
+         // Face cote droit du triangle
+         tabVertex[2] = [
+                // Centre du plan 
+               0.0, 2.0, 0.0,
+               1.0, 0.0, 1.0,
+               1.0, 0.0, -1.0
+            
+         ];
+            // Face cote gauche du triangle
+            tabVertex[3] = [
+                // Centre du plan 
+               0.0, 2.0, 0.0,
+               -1.0, 0.0, 1.0,
+               -1.0, 0.0, -1.0
+            
+         ];
+           // Base carre
+           tabVertex[4] = [
+                 1.0, 0.0 ,-1.0,
+                 1.0, 0.0 , 1.0,
+                -1.0, 0.0 ,1.0,
+                -1.0, 0.0 ,-1.0
+         ];
+
+   // Droites reliées 
+   tabVertex[5] = [
+               /*1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+               -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+                1.0, -1.0, -1.0, 1.0, -1.0, 1.0,
+               -1.0, -1.0, -1.0, -1.0, -1.0, 1.0*/
+               1.0, 0.0 ,-1.0,
+                 1.0, 0.0 , 1.0,
+                -1.0, 0.0 ,1.0,
+                -1.0, 0.0 ,-1.0,
+
+                0.0, 2.0, 0.0,
+               -1.0, 0.0, 1.0,
+               -1.0, 0.0, -1.0,
+
+               0.0, 2.0, 0.0,
+               1.0, 0.0, 1.0,
+               1.0, 0.0, -1.0,
+
+               0.0, 2.0, 0.0,
+               1.0, 0.0, -1.0,
+              -1.0, 0.0, -1.0,
+
+              0.0, 2.0, 0.0,
+               1.0, 0.0, 1.0,
+              -1.0, 0.0, 1.0
+            
+
+         ];
+    /*     // Face arrère pleine
+         tabVertex[1] = [
+                0.0, 0.0, -1.0, // Centre du plan
+                1.0, 1.0, -1.0,
+               -1.0, 1.0, -1.0,
+               -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0,
+                1.0, 1.0, -1.0
+         ];
+
+         // Contour avant
+         tabVertex[2] = [
+                 1.0, 1.0, 1.0,
+                -1.0, 1.0, 1.0,
+                -1.0, -1.0, 1.0,
+                1.0, -1.0, 1.0
+         ];
+
+         // Contour arrière
+         tabVertex[3] = [
+                 1.0, 1.0, -1.0,
+                -1.0, 1.0, -1.0,
+                -1.0, -1.0, -1.0,
+                1.0, -1.0, -1.0
+         ];
+
+      */
+
+         // Création des tampons
+         const tabObjPyramide = new Array();
+         for (let i = 0; i < 6; i++) {
+             tabObjPyramide[i] = objgl.createBuffer();
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjPyramide[i]);
+             objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
+             tabObjPyramide[i].typeDessin = (i < 5) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+         }
+
+         return tabObjPyramide;
+     }
+
+     function creerCouleursPyramide(objgl) {
+         const tabCouleurs = new Array();
+
+         // Couleurs face avant pleine
+         tabCouleurs[0] = []; // Blanc 
+         for (let i = 1; i < 6; i++)
+             tabCouleurs[0] = tabCouleurs[0].concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+
+         // Couleurs face arrière pleine
+      tabCouleurs[1] = []; // Blanc
+         for (let i = 1; i < 6; i++)
+             tabCouleurs[1] = tabCouleurs[1].concat([0.0, 1.0, 0.0, 1.0]); // Vert
+
+       // Couleurs contour droit
+       tabCouleurs[2] = []; // Blanc
+         for (let i = 0; i < 4; i++)
+             tabCouleurs[2] = tabCouleurs[2].concat([ 0.0, 0.0, 1.0, 1.0]); // Bleu
+                 // Couleurs contour gauche
+       tabCouleurs[3] = []; // Blanc
+         for (let i = 0; i < 4; i++)
+             tabCouleurs[3] = tabCouleurs[3].concat([ 1.0, 0.0, 1.0, 1.0]); // Mauve
+            // Couleurs base carre
+            tabCouleurs[4] = []; // Blanc
+         for (let i = 0; i < 4; i++)
+             tabCouleurs[4] = tabCouleurs[4].concat([ 1.0, 1.0, 0.0, 1.0]); // Jaune
+
+             tabCouleurs[5] = []; // Blanc
+         for (let i = 0; i < 4; i++)
+             tabCouleurs[5] = tabCouleurs[5].concat([ 1.0, 1.0, 1.0, 1.0]); // Blanc
+
+
+           /*   // Couleurs contour arrière
+         tabCouleurs[3] = tabCouleurs[2];
+
+         // Couleurs droites reliées aux 2 faces
+         tabCouleurs[4] = tabCouleurs[2].concat(tabCouleurs[2]);*/
+
+         // Création des tampons
+         const tabObjCouleursPyramide = new Array();
+         for (let i = 0; i < 6; i++) {
+             tabObjCouleursPyramide[i] = objgl.createBuffer();
+             objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursPyramide[i]);
+             objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);
+         }
+
+         return tabObjCouleursPyramide;
+     }
+
+     // Pour faire tourner la pyramide
+     function tournerPyramide() {
+         switch (event.keyCode) {
+             case 37: fltAutourY -= Math.PI / 90;
+                 break;
+             case 39: fltAutourY += Math.PI / 90;
+                 break;
+             case 38: fltAutourX -= Math.PI / 90;
+                 break;
+             case 40: fltAutourX += Math.PI / 90;
+                 break;
+         }
+         effacerCanevas(objgl);
+         dessiner(objgl, objProgShaders, tabObjPyramide, tabObjCouleursPyramide);
+     }
+
+</script>
+</head>
+
+<body onload="demarrer()"> 
+   <header class="sTexteCentre sLargeurDiv sEntete">
+        <p> 
+            <span class="sTitreApp">
+                Pyramide<br />
+            </span> par 
+            <span class="sAuteurApp">
+                Gabriel Marrero
+            </span> 
+       </p>
+    </header>
+
+    <main class="sLargeurDiv sCorps">	
+	   <canvas id="monCanvas" width="640" height="640" tabIndex="1" onkeydown="tournerPyramide();return false">
+		    Votre navigateur ne supporte pas la balise canvas
+	    </canvas>
+    </main>
+
+    <footer class="sLargeurDiv sPiedDePage">
+        <p>
+            <a href="http://www.cgodin.qc.ca">
+                <img src="logoCGG.jpg" alt="logoCGG" />
+            </a> 
+ 			<a href="http://www.cgodin.qc.ca/programme/techniques-informatique/">
+	           Département d'informatique du Cégep Gérald-Godin
+	        </a> 
+            <br />
+            &copy; 2020
+        </p>
+    </footer>
+
+</body>
+</html>

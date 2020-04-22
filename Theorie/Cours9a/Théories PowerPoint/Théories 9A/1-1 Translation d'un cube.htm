@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>9-A-1 Translation d'un cube</title>
+  
+  <script type="text/javascript" src="WebGl.js"></script>
+  <script type="text/javascript" src="ShaderCouleurs.js"></script>
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+    
+ <script type="text/javascript">
+    
+    function demarrer() {
+      const objCanvas = document.getElementById('monCanvas');
+      const objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
+      const objProgShaders = initShaders(objgl);
+      const tabObjCube = creerCube(objgl);
+      const tabObjCouleursCube = creerCouleursCube(objgl);
+      
+	  effacerCanevas(objgl);
+	  dessiner(objgl, objProgShaders, tabObjCube, tabObjCouleursCube);
+      }
+
+      function dessiner(objgl, objProgShaders, tabObjCube, tabObjCouleursCube) {
+          // La vue
+          objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
+          
+          // Matrice de projection
+          const matProjection = mat4.create();
+          mat4.ortho(-5, 5, -5, 5, -5, 5, matProjection);
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
+
+          // Matrice du modèle
+          const matModeleVue = mat4.create();
+          mat4.identity(matModeleVue);
+          mat4.translate(matModeleVue, [3,-2, 0]);
+
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+          for (let i = 0; i < tabObjCube.length; i++) {
+              const objCube = tabObjCube[i];
+
+              const objCouleursCube = tabObjCouleursCube[i]; 
+
+              // Relier les vertex aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, objCube);
+              objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+              const intNbVertex = (objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4) / 3;
+
+              // Relier les couleurs aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursCube);
+              objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+
+              // Dessiner
+              objgl.drawArrays(objCube.typeDessin, 0, intNbVertex);
+          }
+      }
+
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT|objgl.DEPTH_BUFFER_BIT);
+    }
+
+    function creerCube(objgl) {
+        const tabVertex = new Array();
+
+        // Face avant pleine
+        tabVertex[0] = [
+			  0.0, 0.0, 1.0, // Centre du plan 
+              1.0, 1.0, 1.0,
+             -1.0, 1.0, 1.0,
+             -1.0, -1.0, 1.0,
+             1.0, -1.0, 1.0,
+			 1.0, 1.0, 1.0
+       ];
+
+       // Face arrère pleine
+       tabVertex[1] = [
+	          0.0, 0.0, -1.0, // Centre du plan
+              1.0, 1.0, -1.0,
+             -1.0, 1.0, -1.0,
+             -1.0, -1.0, -1.0,
+	          1.0, -1.0, -1.0,
+			  1.0, 1.0, -1.0
+       ];
+
+      // Contour avant
+      tabVertex[2] = [
+	          1.0, 1.0, 1.0,
+             -1.0, 1.0, 1.0,
+             -1.0, -1.0, 1.0,
+             1.0, -1.0, 1.0
+	   ];
+
+      // Contour arrière
+      tabVertex[3] = [
+	          1.0, 1.0, -1.0,
+             -1.0, 1.0, -1.0,
+             -1.0, -1.0, -1.0,
+             1.0, -1.0, -1.0
+	   ];
+       
+       // Droites reliées aux 2 faces
+      tabVertex[4] = [
+            1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+            -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+             1.0, -1.0, -1.0, 1.0, -1.0, 1.0,
+            -1.0, -1.0, -1.0, -1.0, -1.0, 1.0
+            ];
+
+        const tabObjCube = new Array();
+        for (let i=0; i < 5; i++) {
+            tabObjCube[i] = objgl.createBuffer();
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCube[i]);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
+            tabObjCube[i].typeDessin = (i < 2) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+            }
+
+       return tabObjCube;
+    }
+
+    function creerCouleursCube(objgl) {
+        const tabCouleurs = new Array();
+        
+        tabCouleurs[0] = [1.0, 1.0, 1.0, 1.0]; // Blanc 
+        for (let i = 1; i < 6; i++)
+            tabCouleurs[0] = tabCouleurs[0].concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+        
+        tabCouleurs[1] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+        for (let i = 1; i < 6; i++)
+            tabCouleurs[1] = tabCouleurs[1].concat([0.0, 1.0, 0.0, 1.0]); // Vert
+        
+        tabCouleurs[2] = [];
+        for (let i = 0; i < 4; i++)
+            tabCouleurs[2] = tabCouleurs[2].concat([1.0, 1.0, 1.0, 1.0]); // Blanc
+
+        tabCouleurs[3] = tabCouleurs[2];
+        tabCouleurs[4] = tabCouleurs[2].concat(tabCouleurs[2]);
+
+        const tabObjCouleursCube = new Array();
+        for (let i = 0; i < 5; i++) {
+            tabObjCouleursCube[i] = objgl.createBuffer();
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursCube[i]);
+            objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);          
+        }
+        return tabObjCouleursCube;
+    }
+  
+</script>
+</head>
+
+<body onload="demarrer()"> 
+	<canvas id="monCanvas" width="640" height="640">
+		Votre navigateur ne supporte pas la balise canvas
+	</canvas>
+</body>
+</html>
